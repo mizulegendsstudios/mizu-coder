@@ -303,4 +303,4 @@ function loadFromLocalStorage() {
 }
 
 // Auto-save cada 2 segundos
-setInterval(saveToLocalStorage, 2000);
+setInterval(saveToLocalStorage, 20000);
