@@ -3,23 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mizu Coder TF002</title>
+    <title>Mizu Coder - Problema Solucionado</title>
+    <link rel="stylesheet" href="src/css/core.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="estilos.css"> <!-- Enlace al archivo CSS -->
 </head>
 <body>
+
 <div class="header">
     <h1>Mizu Coder</h1>
-    <!-- Otros elementos de la cabecera... -->
+    <div class="header-controls">
+        <input type="range" id="resizerSlider" class="progress-bar" min="20" max="80" value="50">
+        <span id="saveIndicator" class="save-indicator">Guardado</span>
+        
+        <div class="code-mode-selector">
+            <span class="mode-label">Separado</span>
+            <label class="mode-switch">
+                <input type="checkbox" id="unifiedModeToggle">
+                <span class="slider"></span>
+            </label>
+            <span class="mode-label">Unificado</span>
+        </div>
+        
+        <button id="exportButton" class="action-button">Exportar</button>
+        <button id="resetButton" class="action-button">Reiniciar</button>
+    </div>
 </div>
+
 <div class="container">
-    <!-- Contenedor para los editores de código y vista previa -->
-    <!--... -->
+    <!-- Contenedor para los editores de código -->
+    <div id="editorContainer" class="editor-container">
+        <!-- Pestañas -->
+        <div class="tabs">
+            <button id="html-tab" class="tab-button active" data-tab="html">HTML</button>
+            <button id="css-tab" class="tab-button" data-tab="css">CSS</button>
+            <button id="js-tab" class="tab-button" data-tab="js">JS</button>
+            <button id="console-tab" class="tab-button" data-tab="console">Consola</button>
+        </div>
+        <!-- Editor de HTML -->
+        <div id="html-editor-wrapper" class="editor-wrapper">
+            <div id="html-line-numbers" class="line-numbers">1</div>
+            <textarea id="htmlEditor" placeholder="Escribe tu HTML aquí..." class="editor"></textarea>
+        </div>
+        <!-- Editor de CSS (inicialmente oculto) -->
+        <div id="css-editor-wrapper" class="editor-wrapper" style="display:none;">
+            <div id="css-line-numbers" class="line-numbers">1</div>
+            <textarea id="cssEditor" placeholder="Escribe tu CSS aquí..." class="editor"></textarea>
+        </div>
+        <!-- Editor de JS (inicialmente oculto) -->
+        <div id="js-editor-wrapper" class="editor-wrapper" style="display:none;">
+            <div id="js-line-numbers" class="line-numbers">1</div>
+            <textarea id="jsEditor" placeholder="Escribe tu JavaScript aquí..." class="editor"></textarea>
+        </div>
+        <!-- Consola (inicialmente oculta) -->
+        <div id="console-wrapper" class="console-container" style="display:none;">
+            <div class="console-header">
+                <div class="console-title">
+                    <i class="fas fa-terminal"></i>
+                    <span>Consola de Salida</span>
+                </div>
+                <div class="console-controls">
+                    <button id="clearConsole" title="Limpiar consola">
+                        <i class="fas fa-trash-alt"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+            <div class="console-content" id="consoleContent">
+                <div class="log-entry info">Consola inicializada. Los mensajes de console.log aparecerán aquí.</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Separador para redimensionar -->
+    <div id="resizer" class="resizer"></div>
+    
+    <!-- Contenedor para la vista previa -->
+    <div id="previewContainer" class="preview-container">
+        <iframe id="previewFrame" class="preview-frame" sandbox="allow-same-origin allow-scripts"></iframe>
+        <div id="debugInfo" class="debug-info">Estado: Listo</div>
+    </div>
 </div>
-<script src="app.js"></script> <!-- Enlace al archivo JavaScript -->
+
+<script src="src/js/core.js"></script>
 </body>
 </html>
