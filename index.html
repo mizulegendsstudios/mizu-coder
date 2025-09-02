@@ -4,21 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mizu Coder - Selector de Modo Apple</title>
+
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fuentes: Inter y Fira Code -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Estilos principales -->
     <link rel="stylesheet" href="src/css/core.css">
+
+    <!-- Meta: Evitar caché durante desarrollo (opcional) -->
+    <meta name="theme-color" content="#3b82f6">
 </head>
 <body>
 
+<!-- Encabezado de la aplicación -->
 <div class="header">
     <h1>Mizu Coder</h1>
     <div class="header-controls">
+        <!-- Control de tamaño (editor vs vista previa) -->
         <input type="range" id="resizerSlider" class="progress-bar" min="20" max="80" value="50">
+
+        <!-- Indicador de guardado -->
         <span id="saveIndicator" class="save-indicator">Guardado</span>
-        
+
         <!-- Selector de modo estilo Apple -->
         <div class="mode-selector-container">
             <div class="mode-selector-button" id="modeSelectorButton">
@@ -54,7 +69,7 @@
                     </div>
                     <div class="mode-info">
                         <div class="mode-title">Estructura Mizu</div>
-                        <div class="mode-description">HTML + src/css/core.css + src/js/core.js</div>
+                        <div class="mode-description">Carga src/css/core.css y src/js/core.js</div>
                     </div>
                 </div>
                 
@@ -64,43 +79,53 @@
                     </div>
                     <div class="mode-info">
                         <div class="mode-title">Personalizado</div>
-                        <div class="mode-description">Crea y gestiona tus propios archivos JS/CSS</div>
+                        <div class="mode-description">Gestiona tus propios archivos JS/CSS</div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Botones de acción -->
         <button id="exportButton" class="action-button">Exportar</button>
         <button id="resetButton" class="action-button">Reiniciar</button>
     </div>
 </div>
 
+<!-- Contenedor principal -->
 <div class="container">
-    <!-- Contenedor para los editores de código -->
+    <!-- Editor de código -->
     <div id="editorContainer" class="editor-container">
         <!-- Pestañas -->
-        <div class="tabs">
+        <div class="tabs" id="tabs">
             <button id="html-tab" class="tab-button active">HTML</button>
             <button id="css-tab" class="tab-button">CSS</button>
             <button id="js-tab" class="tab-button">JS</button>
             <button id="console-tab" class="tab-button">Consola</button>
+            <!-- Botón para añadir nuevas pestañas -->
+            <button id="addTabBtn" class="tab-button" title="Nueva pestaña">
+                <i class="fas fa-plus"></i>
+            </button>
         </div>
-        <!-- Editor de HTML -->
+
+        <!-- Editor HTML -->
         <div id="html-editor-wrapper" class="editor-wrapper">
             <div id="html-line-numbers" class="line-numbers">1</div>
             <textarea id="htmlEditor" placeholder="Escribe tu HTML aquí..." class="editor"></textarea>
         </div>
-        <!-- Editor de CSS (inicialmente oculto) -->
+
+        <!-- Editor CSS -->
         <div id="css-editor-wrapper" class="editor-wrapper" style="display:none;">
             <div id="css-line-numbers" class="line-numbers">1</div>
             <textarea id="cssEditor" placeholder="Escribe tu CSS aquí..." class="editor"></textarea>
         </div>
-        <!-- Editor de JS (inicialmente oculto) -->
+
+        <!-- Editor JS -->
         <div id="js-editor-wrapper" class="editor-wrapper" style="display:none;">
             <div id="js-line-numbers" class="line-numbers">1</div>
             <textarea id="jsEditor" placeholder="Escribe tu JavaScript aquí..." class="editor"></textarea>
         </div>
-        <!-- Consola (inicialmente oculta) -->
+
+        <!-- Consola -->
         <div id="console-wrapper" class="console-container" style="display:none;">
             <div class="console-header">
                 <div class="console-title">
@@ -118,17 +143,22 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Separador para redimensionar -->
     <div id="resizer" class="resizer"></div>
-    
-    <!-- Contenedor para la vista previa -->
+
+    <!-- Vista previa -->
     <div id="previewContainer" class="preview-container">
         <iframe id="previewFrame" class="preview-frame" sandbox="allow-same-origin allow-scripts"></iframe>
         <div id="debugInfo" class="debug-info">Estado: Listo</div>
     </div>
 </div>
 
-<script type="module" src="src/js/core.js"></script>
+<!-- Scripts (módulos ES6) -->
+<script type="module">
+    // Carga dinámica de módulos para mayor flexibilidad
+    import './src/js/core.js';
+</script>
+
 </body>
 </html>
