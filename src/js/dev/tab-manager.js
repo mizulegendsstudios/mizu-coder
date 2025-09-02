@@ -1,16 +1,16 @@
 // src/js/dev/tab-manager.js
-// Gestión segura de pestañas dinámicas - No crea pestañas automáticamente
+// Gestión segura de pestañas dinámicas (JS/CSS)
 
 import { generateUniqueId } from './utils.js';
 
-// ✅ Evita múltiples inicializaciones
-let tabsInitialized = false;
-const createdTabIds = new Set(); // ✅ Evita duplicados
+// ✅ Evita múltiples restauraciones
+let tabsRestored = false;
+const createdTabIds = new Set(); // ✅ Evita pestañas duplicadas
 
 export function createNewTab(type = 'js', app) {
     // ✅ Validar tipo
     if (type !== 'js' && type !== 'css') {
-        console.warn(`[Mizu Coder] Tipo inválido: ${type}`);
+        console.warn(`[Mizu Coder] Tipo no soportado: ${type}`);
         return;
     }
 
@@ -18,16 +18,14 @@ export function createNewTab(type = 'js', app) {
 
     // ✅ Evitar IDs duplicados
     if (createdTabIds.has(id)) {
-        console.warn(`[Mizu Coder] ID duplicado evitado: ${id}`);
+        console.warn(`[Mizu Coder] ID duplicado bloqueado: ${id}`);
         return;
     }
-
-    // ✅ Marcar como creado
     createdTabIds.add(id);
 
-    console.log(`✅ Mizu Coder: Creando nueva pestaña: ${id} (${type})`);
+    console.log(`🆕 Mizu Coder: Creando pestaña - ${id} (${type})`);
 
-    // === 1. Crear botón de pestaña ===
+    // === 1. Botón de pestaña ===
     const tabButton = document.createElement('button');
     tabButton.className = 'tab-button';
     tabButton.id = `${id}-button`;
@@ -37,17 +35,19 @@ export function createNewTab(type = 'js', app) {
 
     tabButton.addEventListener('click', () => switchToTab(id, type));
 
-    // === 2. Crear editor ===
+    // === 2. Wrapper del editor ===
     const wrapper = document.createElement('div');
     wrapper.className = 'editor-wrapper';
     wrapper.id = `${id}-wrapper`;
     wrapper.style.display = 'none';
 
+    // Números de línea
     const lineNumbers = document.createElement('div');
     lineNumbers.className = 'line-numbers';
     lineNumbers.id = `${id}-line-numbers`;
     lineNumbers.innerHTML = '1';
 
+    // Editor
     const editor = document.createElement('textarea');
     editor.className = 'editor';
     editor.dataset.id = id;
@@ -58,7 +58,7 @@ export function createNewTab(type = 'js', app) {
         lineNumbers.scrollTop = editor.scrollTop;
     });
 
-    // Actualizar números y guardar
+    // Actualizar líneas y guardar
     const updateLines = () => {
         const lines = editor.value.split('\n');
         lineNumbers.innerHTML = lines.map((_, i) => i + 1).join('<br>');
@@ -72,14 +72,16 @@ export function createNewTab(type = 'js', app) {
         }
     });
 
+    // Estructura final
     wrapper.appendChild(lineNumbers);
     wrapper.appendChild(editor);
 
     // === 3. Insertar en el DOM ===
     const tabsContainer = document.getElementById('tabs');
     const addTabBtn = document.getElementById('addTabBtn');
+
     if (!tabsContainer || !addTabBtn) {
-        console.error('[Mizu Coder] No se encontró #tabs o #addTabBtn');
+        console.error('❌ Mizu Coder: No se encontró #tabs o #addTabBtn');
         return;
     }
 
@@ -87,9 +89,9 @@ export function createNewTab(type = 'js', app) {
     document.getElementById('editorContainer').appendChild(wrapper);
 
     // === 4. Cargar contenido guardado ===
-    const saved = loadTabContent(id);
-    if (saved) {
-        editor.value = saved;
+    const savedContent = loadTabContent(id);
+    if (savedContent) {
+        editor.value = savedContent;
         updateLines();
     }
 
@@ -110,7 +112,7 @@ function switchToTab(id, type) {
     if (wrapper) wrapper.style.display = 'flex';
     if (button) button.classList.add('active');
 
-    console.log(`🟢 Mizu Coder: Cambiado a ${id}`);
+    console.log(`👁️ Mizu Coder: Vista cambiada a ${id}`);
 }
 
 // === Guardado en localStorage ===
@@ -131,16 +133,17 @@ function saveTabState(id, type) {
     if (!savedTabs.some(tab => tab.id === id)) {
         savedTabs.push({ id, type });
         localStorage.setItem('mizu_coder_tabs', JSON.stringify(savedTabs));
+        console.log(`💾 Mizu Coder: Estado de pestaña guardado: ${id}`);
     }
 }
 
-// ✅ Restaurar pestañas guardadas (una sola vez)
+// ✅ Restaurar pestañas (una sola vez)
 export function restoreSavedTabs(app) {
-    if (tabsInitialized) {
-        console.log('🟡 Mizu Coder: restoreSavedTabs ya fue ejecutado');
+    if (tabsRestored) {
+        console.log('🟡 Mizu Coder: Pestañas ya restauradas');
         return;
     }
-    tabsInitialized = true;
+    tabsRestored = true;
 
     const savedTabs = JSON.parse(localStorage.getItem('mizu_coder_tabs') || '[]');
 
@@ -152,7 +155,7 @@ export function restoreSavedTabs(app) {
     console.log(`🔄 Mizu Coder: Restaurando ${savedTabs.length} pestañas...`);
 
     savedTabs.forEach(tab => {
-        // ✅ Verificar que no exista ya
+        // ✅ Solo crear si no existe
         if (!document.getElementById(`${tab.id}-wrapper`)) {
             setTimeout(() => {
                 createNewTab(tab.type, app);
