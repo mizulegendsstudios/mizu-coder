@@ -1,4 +1,5 @@
-// src/js/core.js - Mizu Coder con consola funcional
+// src/js/core.js
+
 // Obtener los elementos del DOM
 const htmlEditor = document.getElementById('htmlEditor');
 const cssEditor = document.getElementById('cssEditor');
@@ -13,6 +14,7 @@ const resetButton = document.getElementById('resetButton');
 const saveIndicator = document.getElementById('saveIndicator');
 const resizer = document.getElementById('resizer');
 const debugInfo = document.getElementById('debugInfo');
+const unifiedModeToggle = document.getElementById('unifiedModeToggle');
 const consoleContent = document.getElementById('consoleContent');
 const clearConsoleBtn = document.getElementById('clearConsole');
 
@@ -29,36 +31,20 @@ const consoleWrapper = document.getElementById('console-wrapper');
 const htmlLineNumbers = document.getElementById('html-line-numbers');
 const cssLineNumbers = document.getElementById('css-line-numbers');
 const jsLineNumbers = document.getElementById('js-line-numbers');
-    
-// Elementos del selector de modo
-const modeSelectorButton = document.getElementById('modeSelectorButton');
-const modeSelectorDropdown = document.getElementById('modeSelectorDropdown');
-const currentModeText = document.getElementById('currentModeText');
-const modeOptions = document.querySelectorAll('.mode-option');
-    
-// Almacena la pestaña activa
-// Importación de módulos
-import { initializeEditors, updateLineNumbers, handleEditorInput } from './modules/editor.js';
-import { initializePreview, updatePreview } from './modules/preview.js';
-import { initializeConsole, addConsoleMessage, clearConsole } from './modules/console.js';
-import { initializeLayout, updateLayout } from './modules/layout.js';
-import { initializeExport } from './modules/export.js';
-import { initializeStorage, saveToLocalStorage, loadFromLocalStorage } from './modules/storage.js';
-import { initializeModeSelector, currentMode } from './modules/mode-selector.js';
 
-// Variables globales
+// Almacena la pestaña activa
 let activeTab = 'html';
-let currentMode = 'unified'; // unified, separated, mizu, custom
-    
+let unifiedMode = false;
+
 // Nombres para las claves de localStorage
 const storageKeys = {
     html: 'mizu_coder_html',
     css: 'mizu_coder_css',
     js: 'mizu_coder_js',
-    mode: 'mizu_coder_mode'
+    unifiedMode: 'mizu_coder_unified_mode'
 };
 
-// Mensaje inicial para la vista previa
+// Contenido inicial
 const initialHTML = `<!DOCTYPE html>
 <html>
 <head>
@@ -74,9 +60,7 @@ const initialHTML = `<!DOCTYPE html>
             background-color: #f5f5f5;
             color: #333;
         }
-        h1 {
-            color: #2563eb;
-        }
+        h1 { color: #2563eb; }
         .card {
             background: white;
             padding: 20px;
@@ -92,23 +76,19 @@ const initialHTML = `<!DOCTYPE html>
             cursor: pointer;
             margin: 5px;
         }
-        button:hover {
-            background-color: #2563eb;
-        }
+        button:hover { background-color: #2563eb; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>¡Bienvenido a Mizu Coder!</h1>
         <p>Escribe tu código HTML, CSS y JavaScript en las pestañas correspondientes.</p>
-        <p>Puedes redimensionar el área de editor y vista previa con el control deslizante.</p>
         <button onclick="mostrarMensaje()">Haz clic aquí</button>
         <button id="botonJs">Otro botón con JS</button>
         <p id="contador">Contador: 0</p>
     </div>
     
     <script>
-        // JavaScript incluido en HTML
         console.log('¡Documento cargado y listo!');
         console.warn('Esta es una advertencia de ejemplo');
         console.error('Este es un error de ejemplo');
@@ -129,64 +109,26 @@ const initialHTML = `<!DOCTYPE html>
         function mostrarMensaje() {
             const ahora = new Date();
             alert('Hora actual: ' + ahora.toLocaleTimeString());
-            console.log('Mensaje mostrado a las ' + ahora.toLocaleTimeString());
         }
     <\/script>
 </body>
 </html>`;
-const initialCSS = `/* Estilos personalizados para tu proyecto */
+
+const initialCSS = `/* Estilos personalizados */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
 }
+`;
 
-.header {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-}
-
-.button {
-    background-color: #3b82f6;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.button:hover {
-    background-color: #2563eb;
-}`;
-const initialJS = `// JavaScript para tu proyecto
+const initialJS = `// JavaScript inicial
 console.log('¡JavaScript cargado!');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('¡Documento cargado y listo!');
-// Inicialización de la aplicación
-function initializeApp() {
-    // Inicializar todos los módulos
-    initializeStorage();
-    initializeEditors();
-    initializePreview();
-    initializeConsole();
-    initializeLayout();
-    initializeExport();
-    initializeModeSelector();
-    
-    // Cargar datos guardados
-    loadFromLocalStorage();
-
-    // Ejemplo de interacción
     const botonJs = document.getElementById('botonJs');
     const contador = document.getElementById('contador');
     let count = 0;
-    // Configurar event listeners globales
-    setupEventListeners();
 
     botonJs.addEventListener('click', function() {
         count++;
@@ -194,108 +136,68 @@ function initializeApp() {
         this.textContent = 'Clickeado ' + count + ' veces';
         console.log('Botón clickeado ' + count + ' veces');
     });
-    // Actualizar vista inicial
-    updatePreview();
-    updateLayout(document.getElementById('resizerSlider').value);
-
-    // Ejemplo de modificación de estilos con JS
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-            this.style.transition = 'transform 0.3s ease';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
 });
 
 // Función de ejemplo
 function mostrarMensaje() {
     const ahora = new Date();
     alert('Hora actual: ' + ahora.toLocaleTimeString());
-    console.log('Mensaje mostrado a las ' + ahora.toLocaleTimeString());
-    // Iniciar autoguardado
-    setInterval(saveToLocalStorage, 2000);
 }
+`;
 
-// Esta función se llama desde el onclick en HTML
-function cambiarColor() {
-    const colores = ['#ff9999', '#99ff99', '#9999ff', '#ffff99', '#ff99ff'];
-    const randomColor = colores[Math.floor(Math.random() * colores.length)];
-    document.body.style.backgroundColor = randomColor;
-    console.log('Color cambiado a: ' + randomColor);
-}`;
-
-// Función para actualizar los números de línea
+// Actualizar números de línea
 const updateLineNumbers = (textarea, lineNumbersDiv) => {
     const lines = textarea.value.split('\n');
     lineNumbersDiv.innerHTML = lines.map((_, index) => index + 1).join('<br>');
 };
 
-// Función para detectar si el HTML contiene código completo
+// Verificar si el HTML está completo
 const isCompleteHTML = (html) => {
     return html.includes('<!DOCTYPE') || html.includes('<html') || html.includes('<head');
 };
 
-// Función para extraer CSS y JS del HTML completo
+// Extraer CSS y JS del HTML completo
 const extractFromCompleteHTML = (html) => {
     let css = '';
     let js = '';
     let pureHTML = html;
-    
-    // Extraer CSS de las etiquetas style
+
     const styleRegex = /<style([^>]*)>([\s\S]*?)<\/style>/gi;
     let match;
     while ((match = styleRegex.exec(html)) !== null) {
         css += match[2] + '\n';
         pureHTML = pureHTML.replace(match[0], '');
     }
-    
-    // Extraer JS de las etiquetas script
+
     const scriptRegex = /<script([^>]*)>([\s\S]*?)<\/script>/gi;
     while ((match = scriptRegex.exec(html)) !== null) {
-        // Solo incluir scripts internos, no externos
         if (!match[1].includes('src=')) {
             js += match[2] + '\n';
             pureHTML = pureHTML.replace(match[0], '');
         }
     }
-    
     return { html: pureHTML, css, js };
 };
 
-// Función para agregar mensajes a la consola
+// Consola personalizada
 const addConsoleMessage = (message, type = 'info') => {
     const logEntry = document.createElement('div');
     logEntry.classList.add('log-entry', type);
-    
-    // Formatear el mensaje para mostrar correctamente objetos
     let formattedMessage = message;
     if (typeof message === 'object') {
-        try {
-            formattedMessage = JSON.stringify(message, null, 2);
-        } catch (e) {
-            formattedMessage = String(message);
-        }
+        try { formattedMessage = JSON.stringify(message, null, 2); }
+        catch { formattedMessage = String(message); }
     }
-    
     logEntry.textContent = formattedMessage;
     consoleContent.appendChild(logEntry);
-    
-    // Auto-scroll to bottom
     consoleContent.scrollTop = consoleContent.scrollHeight;
-    
-    // Si estamos en la pestaña de consola, asegurarse de que está visible
+
     if (activeTab !== 'console') {
         consoleTab.style.color = '#ef4444';
         consoleTab.innerHTML = 'Consola <span style="color:#ef4444;font-size:0.7em;">●</span>';
     }
 };
 
-// Función para limpiar la consola
 const clearConsole = () => {
     consoleContent.innerHTML = '';
     addConsoleMessage('Consola limpiada.', 'info');
@@ -303,74 +205,56 @@ const clearConsole = () => {
     consoleTab.innerHTML = 'Consola';
 };
 
-// Sobrescribir console.log para capturar los mensajes
 const overrideConsole = (previewWindow) => {
     if (!previewWindow) return;
-    
     const originalLog = previewWindow.console.log;
     const originalWarn = previewWindow.console.warn;
     const originalError = previewWindow.console.error;
-    
+
     previewWindow.console.log = (...args) => {
         originalLog.apply(previewWindow.console, args);
         args.forEach(arg => addConsoleMessage(arg, 'info'));
     };
-    
     previewWindow.console.warn = (...args) => {
         originalWarn.apply(previewWindow.console, args);
         args.forEach(arg => addConsoleMessage(arg, 'warn'));
     };
-    
     previewWindow.console.error = (...args) => {
         originalError.apply(previewWindow.console, args);
         args.forEach(arg => addConsoleMessage(arg, 'error'));
     };
 };
 
-// Función para actualizar la vista previa según el modo seleccionado
+// Actualizar vista previa
 const updatePreview = () => {
     const htmlCode = htmlEditor.value;
     const cssCode = cssEditor.value;
     const jsCode = jsEditor.value;
-
     const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
     const previewWindow = previewFrame.contentWindow;
-    
+
     try {
         debugInfo.textContent = "Actualizando preview...";
-        
-        let fullDocument = '';
-        
-        // Determinar el modo de operación
-        if (currentMode === 'unified') {
-            // Modo unificado: el HTML contiene todo el código
+        if (unifiedMode && isCompleteHTML(htmlCode)) {
             const extracted = extractFromCompleteHTML(htmlCode);
-            const finalHTML = extracted.html;
-            const finalCSS = extracted.css + (cssCode || '');
-            const finalJS = extracted.js + (jsCode || '');
-            
-            fullDocument = `
+            const fullDocument = `
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <style>${finalCSS}</style>
+                    <style>${extracted.css + (cssCode || '')}</style>
                 </head>
                 <body>
-                    ${finalHTML}
-                    <script>
-                        // Envolvemos todo el JS en una IIFE para evitar contaminación global
-                        (function() {
-                            ${finalJS}
-                        })();
-                    <\/script>
+                    ${extracted.html}
+                    <script>(function(){${extracted.js + (jsCode || '')}})();<\/script>
                 </body>
-                </html>
-            `;
-        } else if (currentMode === 'separated') {
-            // Modo separado: HTML, CSS y JS por separado
-            fullDocument = `
+                </html>`;
+            previewDoc.open();
+            previewDoc.write(fullDocument);
+            previewDoc.close();
+        } else {
+            const fullDocument = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -380,142 +264,41 @@ const updatePreview = () => {
                 </head>
                 <body>
                     ${htmlCode}
-                    <script>
-                        // Envolvemos todo el JS en una IIFE para evitar contaminación global
-                        (function() {
-                            ${jsCode}
-                        })();
-                    <\/script>
+                    <script>(function(){${jsCode}})();<\/script>
                 </body>
-                </html>
-            `;
-        } else if (currentMode === 'mizu') {
-            // Estructura Mizu: HTML + src/css/core.css + src/js/core.js
-            fullDocument = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <link rel="stylesheet" href="src/css/core.css">
-                </head>
-                <body>
-                    ${htmlCode}
-                    <script src="src/js/core.js"><\/script>
-                </body>
-                </html>
-            `;
-        } else if (currentMode === 'custom') {
-            // Modo personalizado: similar al separado pero con posibilidad de agregar más archivos
-            fullDocument = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <style>${cssCode}</style>
-                </head>
-                <body>
-                    ${htmlCode}
-                    <script>
-                        // Envolvemos todo el JS en una IIFE para evitar contaminación global
-                        (function() {
-                            ${jsCode}
-                        })();
-                    <\/script>
-                </body>
-                </html>
-            `;
+                </html>`;
+            previewDoc.open();
+            previewDoc.write(fullDocument);
+            previewDoc.close();
         }
-        
-        previewDoc.open();
-        previewDoc.write(fullDocument);
-        previewDoc.close();
-        
-        // Sobrescribir console methods después de que el documento se cargue
-        setTimeout(() => {
-            overrideConsole(previewWindow);
-        }, 100);
-        
+        setTimeout(() => { overrideConsole(previewWindow); }, 100);
         debugInfo.textContent = "Preview actualizado correctamente";
-        
-        // Pequeño delay para asegurar que el JS se ejecute
-        setTimeout(() => {
-            debugInfo.textContent = "Estado: Listo";
-        }, 100);
+        setTimeout(() => { debugInfo.textContent = "Estado: Listo"; }, 100);
     } catch (error) {
         debugInfo.textContent = "Error: " + error.message;
         console.error("Error al actualizar preview:", error);
     }
 };
 
-// Función para guardar el contenido en el almacenamiento local
+// Guardado en localStorage
 const saveToLocalStorage = () => {
     localStorage.setItem(storageKeys.html, htmlEditor.value);
     localStorage.setItem(storageKeys.css, cssEditor.value);
     localStorage.setItem(storageKeys.js, jsEditor.value);
-    localStorage.setItem(storageKeys.mode, currentMode);
-    
-    // Mostrar indicador de guardado
+    localStorage.setItem(storageKeys.unifiedMode, unifiedMode);
     saveIndicator.textContent = 'Guardado';
-    setTimeout(() => {
-        saveIndicator.textContent = '';
-    }, 2000);
+    setTimeout(() => { saveIndicator.textContent = ''; }, 2000);
 };
 
-// Función para cargar el contenido desde el almacenamiento local
 const loadFromLocalStorage = () => {
     htmlEditor.value = localStorage.getItem(storageKeys.html) || initialHTML;
     cssEditor.value = localStorage.getItem(storageKeys.css) || initialCSS;
     jsEditor.value = localStorage.getItem(storageKeys.js) || initialJS;
-    currentMode = localStorage.getItem(storageKeys.mode) || 'unified';
-    
-    // Actualizar la UI según el modo cargado
-    updateModeUI(currentMode);
+    unifiedMode = localStorage.getItem(storageKeys.unifiedMode) === 'true';
+    unifiedModeToggle.checked = unifiedMode;
 };
 
-// Función para actualizar la UI según el modo seleccionado
-const updateModeUI = (mode) => {
-    // Actualizar el texto del botón
-    const modeTexts = {
-        'unified': 'Modo Unificado',
-        'separated': 'Modo Separado',
-        'mizu': 'Estructura Mizu',
-        'custom': 'Personalizado'
-    };
-    currentModeText.textContent = modeTexts[mode] || 'Modo Unificado';
-    
-    // Actualizar las opciones activas en el dropdown
-    modeOptions.forEach(option => {
-        if (option.dataset.mode === mode) {
-            option.classList.add('active');
-            // Agregar badge "Activo"
-            if (!option.querySelector('.mode-badge')) {
-                const badge = document.createElement('div');
-                badge.className = 'mode-badge';
-                badge.textContent = 'Activo';
-                option.appendChild(badge);
-            }
-        } else {
-            option.classList.remove('active');
-            // Eliminar badge "Activo"
-            const badge = option.querySelector('.mode-badge');
-            if (badge) {
-                badge.remove();
-            }
-        }
-// Configurar event listeners globales
-function setupEventListeners() {
-    // Event listener para redimensionamiento de ventana
-    window.addEventListener('resize', () => {
-        updateLayout(document.getElementById('resizerSlider').value);
-});
-    
-    // Ocultar el dropdown
-    modeSelectorDropdown.classList.remove('show');
-};
-
-// Escuchar los eventos de entrada para actualizar la vista previa y los números de línea
+// Eventos editores
 const handleEditorInput = (editor, lineNumbers) => {
     updatePreview();
     updateLineNumbers(editor, lineNumbers);
@@ -526,37 +309,18 @@ htmlEditor.addEventListener('input', () => handleEditorInput(htmlEditor, htmlLin
 cssEditor.addEventListener('input', () => handleEditorInput(cssEditor, cssLineNumbers));
 jsEditor.addEventListener('input', () => handleEditorInput(jsEditor, jsLineNumbers));
 
-// Sincronizar el scroll de los editores con los números de línea
 htmlEditor.addEventListener('scroll', () => htmlLineNumbers.scrollTop = htmlEditor.scrollTop);
 cssEditor.addEventListener('scroll', () => cssLineNumbers.scrollTop = cssEditor.scrollTop);
 jsEditor.addEventListener('scroll', () => jsLineNumbers.scrollTop = jsEditor.scrollTop);
 
-// Lógica para el cambio de pestañas - CORREGIDA
+// Cambio de pestañas
 const switchTab = (tabName) => {
-    const tabs = [htmlTab, cssTab, jsTab, consoleTab];
-    const wrappers = [htmlWrapper, cssWrapper, jsWrapper, consoleWrapper];
-
-    tabs.forEach(tab => tab.classList.remove('active'));
-    wrappers.forEach(wrapper => wrapper.style.display = 'none');
-
-    // Mostrar el contenido correcto según la pestaña seleccionada
-    if (tabName === 'html') {
-        htmlTab.classList.add('active');
-        htmlWrapper.style.display = 'flex';
-    } else if (tabName === 'css') {
-        cssTab.classList.add('active');
-        cssWrapper.style.display = 'flex';
-    } else if (tabName === 'js') {
-        jsTab.classList.add('active');
-        jsWrapper.style.display = 'flex';
-    } else if (tabName === 'console') {
-        consoleTab.classList.add('active');
-        consoleWrapper.style.display = 'flex';
-        // Restaurar el color normal de la pestaña de consola al seleccionarla
-        consoleTab.style.color = '#3b82f6';
-        consoleTab.innerHTML = 'Consola';
-    }
-    
+    [htmlTab, cssTab, jsTab, consoleTab].forEach(tab => tab.classList.remove('active'));
+    [htmlWrapper, cssWrapper, jsWrapper, consoleWrapper].forEach(wrapper => wrapper.style.display = 'none');
+    if (tabName === 'html') { htmlTab.classList.add('active'); htmlWrapper.style.display = 'flex'; }
+    else if (tabName === 'css') { cssTab.classList.add('active'); cssWrapper.style.display = 'flex'; }
+    else if (tabName === 'js') { jsTab.classList.add('active'); jsWrapper.style.display = 'flex'; }
+    else if (tabName === 'console') { consoleTab.classList.add('active'); consoleWrapper.style.display = 'flex'; consoleTab.style.color = '#3b82f6'; consoleTab.innerHTML = 'Consola'; }
     activeTab = tabName;
 };
 
@@ -565,30 +329,13 @@ cssTab.addEventListener('click', () => switchTab('css'));
 jsTab.addEventListener('click', () => switchTab('js'));
 consoleTab.addEventListener('click', () => switchTab('console'));
 
-// Lógica para exportar el código
+// Exportar código
 exportButton.addEventListener('click', () => {
-    let code = '';
-    let fileName = '';
-    let mimeType = '';
-
-    if (activeTab === 'html') {
-        code = htmlEditor.value;
-        fileName = 'mizu_coder_html.html';
-        mimeType = 'text/html';
-    } else if (activeTab === 'css') {
-        code = cssEditor.value;
-        fileName = 'mizu_coder_css.css';
-        mimeType = 'text/css';
-    } else if (activeTab === 'js') {
-        code = jsEditor.value;
-        fileName = 'mizu_coder_js.js';
-        mimeType = 'application/javascript';
-    } else if (activeTab === 'console') {
-        // Exportar el contenido de la consola
-        code = consoleContent.innerText;
-        fileName = 'mizu_coder_console.txt';
-        mimeType = 'text/plain';
-    }
+    let code = '', fileName = '', mimeType = '';
+    if (activeTab === 'html') { code = htmlEditor.value; fileName = 'mizu_coder_html.html'; mimeType = 'text/html'; }
+    else if (activeTab === 'css') { code = cssEditor.value; fileName = 'mizu_coder_css.css'; mimeType = 'text/css'; }
+    else if (activeTab === 'js') { code = jsEditor.value; fileName = 'mizu_coder_js.js'; mimeType = 'application/javascript'; }
+    else if (activeTab === 'console') { code = consoleContent.innerText; fileName = 'mizu_coder_console.txt'; mimeType = 'text/plain'; }
 
     const blob = new Blob([code], { type: mimeType });
     const link = document.createElement('a');
@@ -599,29 +346,24 @@ exportButton.addEventListener('click', () => {
     document.body.removeChild(link);
 });
 
-// Lógica para reiniciar el preview sin borrar el código
-resetButton.addEventListener('click', () => {
-    updatePreview();
-});
+// Reiniciar preview
+resetButton.addEventListener('click', () => updatePreview());
+
+// Cambiar modo
+unifiedModeToggle.addEventListener('change', () => { unifiedMode = unifiedModeToggle.checked; updatePreview(); });
 
 // Limpiar consola
-clearConsoleBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // Evitar que se toggle la consola
-    clearConsole();
-});
+clearConsoleBtn.addEventListener('click', (e) => { e.stopPropagation(); clearConsole(); });
 
-// Redimensionamiento con la barra de progreso
+// Redimensionamiento
 const updateLayout = (value) => {
     const isPortrait = window.innerWidth < 768;
-    
     if (!isPortrait) {
-        // Modo horizontal (escritorio)
         editorContainer.style.width = `${value}%`;
         previewContainer.style.width = `${100 - value}%`;
         editorContainer.style.height = '100%';
         previewContainer.style.height = '100%';
     } else {
-        // Modo vertical (móvil)
         editorContainer.style.height = `${value}%`;
         previewContainer.style.height = `${100 - value}%`;
         editorContainer.style.width = '100%';
@@ -629,55 +371,16 @@ const updateLayout = (value) => {
     }
 };
 
-// Escuchar el cambio en la barra de progreso
-resizerSlider.addEventListener('input', (e) => {
-    updateLayout(e.target.value);
-});
+resizerSlider.addEventListener('input', (e) => updateLayout(e.target.value));
+window.addEventListener('resize', () => updateLayout(resizerSlider.value));
 
-// Ajustar el layout al cambiar el tamaño de la ventana
-window.addEventListener('resize', () => {
-    updateLayout(resizerSlider.value);
-});
-
-// Lógica para el selector de modo estilo Apple
-modeSelectorButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    modeSelectorDropdown.classList.toggle('show');
-});
-}
-
-// Cerrar el dropdown al hacer clic fuera de él
-document.addEventListener('click', (e) => {
-    if (!modeSelectorButton.contains(e.target) && !modeSelectorDropdown.contains(e.target)) {
-        modeSelectorDropdown.classList.remove('show');
-    }
-});
-// Iniciar la aplicación cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-// Manejar la selección de modo
-modeOptions.forEach(option => {
-    option.addEventListener('click', () => {
-        const selectedMode = option.dataset.mode;
-        currentMode = selectedMode;
-        updateModeUI(selectedMode);
-        updatePreview();
-        saveToLocalStorage();
-    });
-});
-
-// Inicializar la vista previa con el contenido guardado o inicial
+// Inicialización
 window.onload = () => {
     loadFromLocalStorage();
     updatePreview();
     updateLineNumbers(htmlEditor, htmlLineNumbers);
     updateLineNumbers(cssEditor, cssLineNumbers);
     updateLineNumbers(jsEditor, jsLineNumbers);
-    
     updateLayout(resizerSlider.value);
-    
-    // Autoguardado cada 2 segundos
     setInterval(saveToLocalStorage, 2000);
 };
-// Exportar variables globales para uso en otros módulos
-export { activeTab, currentMode };
