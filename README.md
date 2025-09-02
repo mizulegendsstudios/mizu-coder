@@ -7,7 +7,7 @@
 
 ## 📖 Descripción
 
-**Mizu Coder** es una herramienta web interactiva diseñada para facilitar la edición y previsualización de código **HTML**, **CSS** y **JavaScript** en tiempo real.  
+**Mizu Coder** es una aplicación web interactiva diseñada para facilitar la edición y previsualización de código **HTML**, **CSS** y **JavaScript** en tiempo real.  
 Permite a los usuarios escribir código en editores separados por pestañas, ver resultados instantáneamente en una vista previa integrada y depurar con una consola personalizada.
 
 ---
