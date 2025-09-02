@@ -1,16 +1,22 @@
 // src/js/dev/tab-manager.js
-// Gestiona la creación y control de pestañas dinámicas (JS/CSS)
+// Gestiona pestañas dinámicas (JS/CSS) con soporte para localStorage y prevención de bucles
 
 import { generateUniqueId } from './utils.js';
 
 /**
  * Crea una nueva pestaña de código (JS o CSS)
  * @param {string} type - 'js' o 'css'
- * @param {object} app - Referencia a la app para acceso a funciones como updatePreview
+ * @param {object} app - Referencia a la app (para updatePreview, etc.)
  */
-export function createNewTab(type = 'js', app) {
+export function createNewTab(type, app) {
     const id = `${type}-tab-${generateUniqueId()}`;
     const label = type === 'js' ? 'JS Extra' : 'CSS Extra';
+
+    // Evitar IDs duplicados
+    if (document.getElementById(`${id}-wrapper`)) {
+        console.warn(`[Mizu Coder] Pestaña con ID duplicado: ${id}`);
+        return;
+    }
 
     // === 1. Crear el botón de pestaña ===
     const tabButton = document.createElement('button');
@@ -31,73 +37,60 @@ export function createNewTab(type = 'js', app) {
     editorWrapper.id = `${id}-wrapper`;
     editorWrapper.style.display = 'none';
 
-    // === 3. Crear el textarea del editor ===
+    // === 3. Números de línea ===
+    const lineNumbersDiv = document.createElement('div');
+    lineNumbersDiv.className = 'line-numbers';
+    lineNumbersDiv.id = `${id}-line-numbers`;
+    lineNumbersDiv.innerHTML = '1';
+
+    // === 4. Editor de texto ===
     const editor = document.createElement('textarea');
     editor.className = 'editor';
     editor.dataset.id = id;
     editor.placeholder = `Escribe tu ${type.toUpperCase()} aquí...`;
-    editor.value = ''; // Puedes cargar desde localStorage si existe
+    editor.value = loadTabContent(id) || '';
 
-    // Añadir eventos para actualización
-    editor.addEventListener('input', () => {
-        if (typeof app.updatePreview === 'function') {
-            app.updatePreview();
-        }
-        saveTabContent(id, editor.value);
-    });
-
-    // Sincronizar scroll con números de línea
-    const lineNumbersId = `${id}-line-numbers`;
-    const lineNumbersDiv = document.createElement('div');
-    lineNumbersDiv.className = 'line-numbers';
-    lineNumbersDiv.id = lineNumbersId;
-    lineNumbersDiv.innerHTML = '1';
-
+    // Sincronizar scroll
     editor.addEventListener('scroll', () => {
         lineNumbersDiv.scrollTop = editor.scrollTop;
     });
 
+    // Actualizar números de línea
+    const updateLines = () => {
+        const lines = editor.value.split('\n');
+        lineNumbersDiv.innerHTML = lines.map((_, i) => i + 1).join('<br>');
+    };
+    updateLines();
+
     editor.addEventListener('input', () => {
-        updateLineNumbers(editor, lineNumbersDiv);
+        updateLines();
+        saveTabContent(id, editor.value);
+        if (typeof app.updatePreview === 'function') {
+            app.updatePreview();
+        }
     });
 
-    // Actualizar números al inicio
-    updateLineNumbers(editor, lineNumbersDiv);
-
-    // === 4. Estructura final del wrapper: números + editor ===
+    // === 5. Estructura final: números + editor ===
     editorWrapper.appendChild(lineNumbersDiv);
     editorWrapper.appendChild(editor);
 
-    // === 5. Insertar en el DOM ===
+    // === 6. Insertar en el DOM (antes del botón +) ===
     const tabsContainer = document.getElementById('tabs');
-    const container = document.getElementById('editorContainer');
-
-    // Insertar antes del botón "+"
     const addTabBtn = document.getElementById('addTabBtn');
     tabsContainer.insertBefore(tabButton, addTabBtn);
-
-    container.appendChild(editorWrapper);
-
-    // === 6. Cargar contenido previo si existe ===
-    const saved = loadTabContent(id);
-    if (saved) {
-        editor.value = saved;
-        updateLineNumbers(editor, lineNumbersDiv);
-    }
+    document.getElementById('editorContainer').appendChild(editorWrapper);
 
     // === 7. Cambiar a la nueva pestaña ===
     switchToTab(id, type);
 
-    // === 8. Guardar estado de pestañas ===
+    // === 8. Guardar estado ===
     saveTabState(id, type, label);
-    console.log(`[Mizu Coder] Pestaña creada: ${id} (${type})`);
-
-    return { tabButton, editorWrapper, editor };
+    console.log(`✅ Mizu Coder: Pestaña creada - ${id} (${type})`);
 }
 
 /**
  * Cambia a una pestaña específica
- * @param {string} id - ID de la pestaña (sin sufijo)
+ * @param {string} id - ID sin sufijo
  * @param {string} type - 'js' o 'css'
  */
 function switchToTab(id, type) {
@@ -111,7 +104,7 @@ function switchToTab(id, type) {
         tab.classList.remove('active');
     });
 
-    // Mostrar el wrapper correcto
+    // Mostrar el wrapper
     const wrapper = document.getElementById(`${id}-wrapper`);
     if (wrapper) wrapper.style.display = 'flex';
 
@@ -119,28 +112,11 @@ function switchToTab(id, type) {
     const button = document.getElementById(`${id}-button`);
     if (button) button.classList.add('active');
 
-    // Actualizar pestaña activa
-    if (type === 'js') {
-        window.activeTab = 'js';
-    } else if (type === 'css') {
-        window.activeTab = 'css';
-    }
-
-    console.log(`[Mizu Coder] Cambiado a pestaña: ${id}`);
+    console.log(`🟢 Mizu Coder: Cambiado a pestaña ${id}`);
 }
 
 /**
- * Actualiza los números de línea
- * @param {HTMLTextAreaElement} textarea
- * @param {HTMLDivElement} lineNumbersDiv
- */
-function updateLineNumbers(textarea, lineNumbersDiv) {
-    const lines = textarea.value.split('\n');
-    lineNumbersDiv.innerHTML = lines.map((_, index) => index + 1).join('<br>');
-}
-
-/**
- * Guarda el contenido de una pestaña en localStorage
+ * Guarda el contenido de una pestaña
  * @param {string} id
  * @param {string} content
  */
@@ -148,12 +124,12 @@ function saveTabContent(id, content) {
     try {
         localStorage.setItem(`mizu_coder_tab_${id}_content`, content);
     } catch (e) {
-        console.warn('No se pudo guardar el contenido de la pestaña:', e);
+        console.warn(`❌ No se pudo guardar contenido de ${id}:`, e);
     }
 }
 
 /**
- * Carga el contenido de una pestaña desde localStorage
+ * Carga el contenido de una pestaña
  * @param {string} id
  * @returns {string|null}
  */
@@ -162,37 +138,38 @@ function loadTabContent(id) {
 }
 
 /**
- * Guarda el estado de la pestaña (tipo, etiqueta)
+ * Guarda el estado de la pestaña
  * @param {string} id
  * @param {string} type
  * @param {string} label
  */
 function saveTabState(id, type, label) {
     const savedTabs = JSON.parse(localStorage.getItem('mizu_coder_tabs') || '[]');
-    savedTabs.push({ id, type, label });
-    localStorage.setItem('mizu_coder_tabs', JSON.stringify(savedTabs));
+    if (!savedTabs.some(tab => tab.id === id)) {
+        savedTabs.push({ id, type, label });
+        localStorage.setItem('mizu_coder_tabs', JSON.stringify(savedTabs));
+    }
 }
 
 /**
- * Carga todas las pestañas guardadas al iniciar
+ * Restaura todas las pestañas guardadas
  * @param {object} app
  */
 export function restoreSavedTabs(app) {
+    if (restoreSavedTabs.hasRestored) return;
+    restoreSavedTabs.hasRestored = true;
+
     const savedTabs = JSON.parse(localStorage.getItem('mizu_coder_tabs') || '[]');
+    
+    if (savedTabs.length === 0) return;
+
+    console.log(`🔄 Mizu Coder: Restaurando ${savedTabs.length} pestañas...`);
+
     savedTabs.forEach(tab => {
         setTimeout(() => {
-            // Verificar que no exista ya
             if (!document.getElementById(`${tab.id}-wrapper`)) {
                 createNewTab(tab.type, app);
-                const editor = document.querySelector(`[data-id="${tab.id}"]`);
-                if (editor) {
-                    const savedContent = loadTabContent(tab.id);
-                    if (savedContent) {
-                        editor.value = savedContent;
-                        updateLineNumbers(editor, document.getElementById(`${tab.id}-line-numbers`));
-                    }
-                }
             }
-        }, 100); // Pequeño retraso para evitar conflictos
+        }, 50);
     });
 }
