@@ -163,11 +163,11 @@ h1, h2, h3, h4, h5, h6 {
    Contenedor principal
 ============================== */
 .container {
-  display: flex;
-  flex-grow: 1;
-  overflow: hidden;
-  flex-direction: column;
-  height: calc(100vh - 73px);
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    height: calc(100vh - 73px);
+    position: relative;
 }
 
 /* ==============================
