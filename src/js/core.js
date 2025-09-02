@@ -1,11 +1,11 @@
-// Importación de módulos (sin la carpeta modules/)
-import { initializeEditors, updateLineNumbers, handleEditorInput } from './editor.js';
+// Importación de módulos
+import { initializeEditors } from './editor.js';
 import { initializePreview, updatePreview } from './preview.js';
-import { initializeConsole, addConsoleMessage, clearConsole } from './console.js';
+import { initializeConsole } from './console.js';
 import { initializeLayout, updateLayout } from './layout.js';
 import { initializeExport } from './export.js';
 import { initializeStorage, saveToLocalStorage, loadFromLocalStorage } from './storage.js';
-import { initializeModeSelector, currentMode } from './mode-selector.js';
+import { initializeModeSelector } from './mode-selector.js';
 
 // Variables globales
 let activeTab = 'html';
@@ -29,7 +29,6 @@ function initializeApp() {
     
     // Actualizar vista inicial
     updatePreview();
-    updateLayout(document.getElementById('resizerSlider').value);
     
     // Iniciar autoguardado
     setInterval(saveToLocalStorage, 2000);
@@ -39,12 +38,17 @@ function initializeApp() {
 function setupEventListeners() {
     // Event listener para redimensionamiento de ventana
     window.addEventListener('resize', () => {
-        updateLayout(document.getElementById('resizerSlider').value);
+        const resizerSlider = document.getElementById('resizerSlider');
+        updateLayout(resizerSlider.value);
     });
 }
 
 // Iniciar la aplicación cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', initializeApp);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
 
 // Exportar variables globales para uso en otros módulos
-export { activeTab, currentMode };
+export { activeTab };
