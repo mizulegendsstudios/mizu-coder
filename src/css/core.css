@@ -565,3 +565,18 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 12px;
   z-index: 1000;
 }
+/* ==============================
+   Explorador de archivos
+============================== */
+.file-explorer {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #e5e7eb;
+    background-color: #111827;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 0.5rem;
+    overflow-x: auto;
+    white-space: pre;
+}
