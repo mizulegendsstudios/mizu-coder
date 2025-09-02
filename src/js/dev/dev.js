@@ -1,52 +1,77 @@
 // src/js/dev/dev.js
-import { createNewTab } from './tab-manager.js';
+// Funcionalidades en desarrollo: pestañas dinámicas, modo Mizu
+
+import { createNewTab, restoreSavedTabs } from './tab-manager.js';
 import { activateMizuMode } from './mode-mizu.js';
 
-let devFeaturesInitialized = false;
+let initialized = false;
 
 export function setupDevFeatures(app) {
-    if (devFeaturesInitialized) return;
-    devFeaturesInitialized = true;
+    if (initialized) {
+        console.warn('⚠️ setupDevFeatures ya fue inicializado');
+        return;
+    }
+    initialized = true;
 
-    // Restaurar pestañas guardadas
+    console.log('🟢 Mizu Coder: Inicializando funcionalidades de desarrollo...');
+
+    // --- 1. Restaurar pestañas guardadas ---
     restoreSavedTabs(app);
 
-    // Botón "+" para nuevas pestañas
+    // --- 2. Botón "+" para nuevas pestañas ---
     const addTabBtn = document.getElementById('addTabBtn');
     if (addTabBtn) {
         addTabBtn.addEventListener('click', () => {
-            // Solicitar tipo de pestaña
             let typeInput = prompt('¿Qué tipo de pestaña? (js/css)', 'js');
-
-            // Validar entrada
+            
             if (!typeInput) {
-                console.log('❌ Mizu Coder: Creación de pestaña cancelada o entrada inválida');
+                console.log('❌ Mizu Coder: Creación cancelada');
                 return;
             }
 
-            const type = typeInput.toLowerCase().trim();
+            const type = typeInput.trim().toLowerCase();
             if (type !== 'js' && type !== 'css') {
                 alert('❌ Tipo inválido. Usa "js" o "css"');
-                console.log('❌ Mizu Coder: Tipo inválido ingresado:', typeInput);
+                console.warn('❌ Tipo inválido:', typeInput);
                 return;
             }
 
-            // Crear pestaña
             createNewTab(type, app);
-            console.log(`✅ Mizu Coder: Pestaña creada - Tipo: ${type}`);
         });
+    } else {
+        console.warn('⚠️ Botón #addTabBtn no encontrado');
     }
 
-    // Detectar modo Mizu
+    // --- 3. Selector de modo ---
     const modeOptions = document.querySelectorAll('.mode-option');
+    if (modeOptions.length === 0) {
+        console.warn('⚠️ No se encontraron opciones de modo');
+        return;
+    }
+
     modeOptions.forEach(option => {
         option.addEventListener('click', () => {
-            if (option.dataset.mode === 'mizu') {
+            const mode = option.dataset.mode;
+            console.log(`🎯 Modo seleccionado: ${mode}`);
+
+            if (mode === 'mizu' && typeof activateMizuMode === 'function') {
                 activateMizuMode(app);
             }
+
+            // Forzar actualización
             if (typeof app.updatePreview === 'function') {
-                setTimeout(app.updatePreview, 100);
+                setTimeout(() => {
+                    app.updatePreview();
+                }, 100);
             }
         });
     });
+
+    // --- 4. Si ya está en modo Mizu, activarlo ---
+    const savedMode = localStorage.getItem('mizu_coder_mode');
+    if (savedMode === 'mizu') {
+        activateMizuMode(app);
+    }
+
+    console.log('✅ Mizu Coder: Funcionalidades de desarrollo listas');
 }
