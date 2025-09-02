@@ -1,134 +1,108 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mizu Coder - Selector de Modo Apple</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="src/css/core.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mizu Coder v2.1.0</title>
+  <meta name="description" content="Mizu Coder - Editor en vivo HTML, CSS y JS con modos avanzados">
+  <link rel="stylesheet" href="src/css/core.css">
 </head>
 <body>
-
-<div class="header">
+  <!-- Header principal -->
+  <header class="header">
     <h1>Mizu Coder</h1>
     <div class="header-controls">
-        <input type="range" id="resizerSlider" class="progress-bar" min="20" max="80" value="50">
-        <span id="saveIndicator" class="save-indicator">Guardado</span>
-        
-        <!-- Selector de modo estilo Apple -->
-        <div class="mode-selector-container">
-            <div class="mode-selector-button" id="modeSelectorButton">
-                <i class="fas fa-cube"></i>
-                <span id="currentModeText">Modo Unificado</span>
-                <i class="fas fa-chevron-down" style="font-size: 0.75rem;"></i>
+      <!-- Barra de progreso / slider -->
+      <input type="range" id="resizer" class="progress-bar" min="20" max="80" value="50">
+      
+      <!-- Selector de modo estilo Apple -->
+      <div class="mode-selector-container">
+        <button id="mode-selector" class="mode-selector-button">
+          <span>Modo Separado</span>
+        </button>
+        <div id="mode-dropdown" class="mode-selector-dropdown">
+          <div class="mode-option active" data-mode="separado">
+            <div class="mode-icon">📄</div>
+            <div class="mode-info">
+              <div class="mode-title">Modo Separado</div>
+              <div class="mode-description">HTML, CSS y JS en pestañas independientes.</div>
             </div>
-            <div class="mode-selector-dropdown" id="modeSelectorDropdown">
-                <div class="mode-option active" data-mode="unified">
-                    <div class="mode-icon" style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444;">
-                        <i class="fas fa-file-code"></i>
-                    </div>
-                    <div class="mode-info">
-                        <div class="mode-title">Modo Unificado</div>
-                        <div class="mode-description">Solo archivo HTML con todo el código</div>
-                    </div>
-                    <div class="mode-badge">Activo</div>
-                </div>
-                
-                <div class="mode-option" data-mode="separated">
-                    <div class="mode-icon" style="background-color: rgba(16, 185, 129, 0.2); color: #10b981;">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="mode-info">
-                        <div class="mode-title">Modo Separado</div>
-                        <div class="mode-description">HTML + CSS + JS en archivos separados</div>
-                    </div>
-                </div>
-                
-                <div class="mode-option" data-mode="mizu">
-                    <div class="mode-icon" style="background-color: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
-                        <i class="fas fa-folder-tree"></i>
-                    </div>
-                    <div class="mode-info">
-                        <div class="mode-title">Estructura Mizu</div>
-                        <div class="mode-description">HTML + src/css/core.css + src/js/core.js</div>
-                    </div>
-                </div>
-                
-                <div class="mode-option" data-mode="custom">
-                    <div class="mode-icon" style="background-color: rgba(245, 158, 11, 0.2); color: #f59e0b;">
-                        <i class="fas fa-folder-plus"></i>
-                    </div>
-                    <div class="mode-info">
-                        <div class="mode-title">Personalizado</div>
-                        <div class="mode-description">Crea y gestiona tus propios archivos JS/CSS</div>
-                    </div>
-                </div>
+          </div>
+          <div class="mode-option" data-mode="unificado">
+            <div class="mode-icon">📑</div>
+            <div class="mode-info">
+              <div class="mode-title">Modo Unificado</div>
+              <div class="mode-description">Todo el código en un solo archivo HTML.</div>
             </div>
+          </div>
+          <div class="mode-option" data-mode="mizu">
+            <div class="mode-icon">💧</div>
+            <div class="mode-info">
+              <div class="mode-title">Modo Mizu</div>
+              <div class="mode-description">Basado en core.js + core.css.</div>
+            </div>
+            <span class="mode-badge">En desarrollo</span>
+          </div>
+          <div class="mode-option" data-mode="personalizado">
+            <div class="mode-icon">⚙️</div>
+            <div class="mode-info">
+              <div class="mode-title">Modo Personalizado</div>
+              <div class="mode-description">Soporte para múltiples archivos JS/CSS.</div>
+            </div>
+            <span class="mode-badge">En desarrollo</span>
+          </div>
         </div>
-        
-        <button id="exportButton" class="action-button">Exportar</button>
-        <button id="resetButton" class="action-button">Reiniciar</button>
-    </div>
-</div>
+      </div>
 
-<div class="container">
-    <!-- Contenedor para los editores de código -->
-    <div id="editorContainer" class="editor-container">
-        <!-- Pestañas -->
-        <div class="tabs">
-            <button id="html-tab" class="tab-button active">HTML</button>
-            <button id="css-tab" class="tab-button">CSS</button>
-            <button id="js-tab" class="tab-button">JS</button>
-            <button id="console-tab" class="tab-button">Consola</button>
-        </div>
-        <!-- Editor de HTML -->
-        <div id="html-editor-wrapper" class="editor-wrapper">
-            <div id="html-line-numbers" class="line-numbers">1</div>
-            <textarea id="htmlEditor" placeholder="Escribe tu HTML aquí..." class="editor"></textarea>
-        </div>
-        <!-- Editor de CSS (inicialmente oculto) -->
-        <div id="css-editor-wrapper" class="editor-wrapper" style="display:none;">
-            <div id="css-line-numbers" class="line-numbers">1</div>
-            <textarea id="cssEditor" placeholder="Escribe tu CSS aquí..." class="editor"></textarea>
-        </div>
-        <!-- Editor de JS (inicialmente oculto) -->
-        <div id="js-editor-wrapper" class="editor-wrapper" style="display:none;">
-            <div id="js-line-numbers" class="line-numbers">1</div>
-            <textarea id="jsEditor" placeholder="Escribe tu JavaScript aquí..." class="editor"></textarea>
-        </div>
-        <!-- Consola (inicialmente oculta) -->
-        <div id="console-wrapper" class="console-container" style="display:none;">
-            <div class="console-header">
-                <div class="console-title">
-                    <i class="fas fa-terminal"></i>
-                    <span>Consola de Salida</span>
-                </div>
-                <div class="console-controls">
-                    <button id="clearConsole" title="Limpiar consola">
-                        <i class="fas fa-trash-alt"></i> Limpiar
-                    </button>
-                </div>
-            </div>
-            <div class="console-content" id="consoleContent">
-                <div class="log-entry info">Consola inicializada. Los mensajes de console.log aparecerán aquí.</div>
-            </div>
-        </div>
+      <!-- Botón de guardado -->
+      <button class="action-button" id="save-btn">Guardar</button>
+      <span id="save-status" class="save-indicator">Guardado</span>
     </div>
-    
-    <!-- Separador para redimensionar -->
-    <div id="resizer" class="resizer"></div>
-    
-    <!-- Contenedor para la vista previa -->
-    <div id="previewContainer" class="preview-container">
-        <iframe id="previewFrame" class="preview-frame" sandbox="allow-same-origin allow-scripts"></iframe>
-        <div id="debugInfo" class="debug-info">Estado: Listo</div>
-    </div>
-</div>
+  </header>
 
-<script type="module" src="src/js/core.js"></script>
+  <!-- Contenedor principal -->
+  <main class="container">
+    <!-- Panel de editores -->
+    <section class="editor-container" id="editor-container">
+      <!-- Pestañas -->
+      <div class="tabs" id="tabs">
+        <button class="tab-button active" data-editor="html">HTML</button>
+        <button class="tab-button" data-editor="css">CSS</button>
+        <button class="tab-button" data-editor="js">JS</button>
+        <!-- Aquí se podrán añadir nuevas pestañas dinámicas JS en v2.1.0 -->
+      </div>
+      
+      <!-- Editor con numeración de línea -->
+      <div class="editor-wrapper">
+        <div class="line-numbers" id="line-numbers"></div>
+        <textarea class="editor" id="editor"></textarea>
+      </div>
+    </section>
+
+    <!-- Resizer -->
+    <div class="resizer" id="dragbar"></div>
+
+    <!-- Panel de vista previa y consola -->
+    <section class="preview-container">
+      <iframe id="preview" class="preview-frame"></iframe>
+      <div class="console-container">
+        <div class="console-header">
+          <div class="console-title">Consola</div>
+          <div class="console-controls">
+            <button id="clear-console">🗑️</button>
+          </div>
+        </div>
+        <div id="console-content" class="console-content"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Debug info -->
+  <div id="debug-info" class="debug-info">v2.1.0 - Ready</div>
+
+  <!-- Scripts principales -->
+  <script src="src/js/core.js"></script>
+  <script src="src/js/funcionables2_0_0.js"></script>
+  <script src="src/js/nuevasfunciones.js"></script>
 </body>
 </html>
