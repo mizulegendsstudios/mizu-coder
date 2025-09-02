@@ -1,6 +1,6 @@
 // src/js/core.js
-import { setupStableFeatures } from './src/stable/stable.js';
-import { setupDevFeatures } from './src/dev/dev.js';
+import { setupStableFeatures } from './stable/stable.js';
+import { setupDevFeatures } from './dev/dev.js';
 
 const app = {
     currentMode: 'unified',
