@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mizu Coder - Problema Solucionado</title>
+    <title>Mizu Coder - Selector de Modo Apple</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,13 +19,55 @@
         <input type="range" id="resizerSlider" class="progress-bar" min="20" max="80" value="50">
         <span id="saveIndicator" class="save-indicator">Guardado</span>
         
-        <div class="code-mode-selector">
-            <span class="mode-label">Separado</span>
-            <label class="mode-switch">
-                <input type="checkbox" id="unifiedModeToggle">
-                <span class="slider"></span>
-            </label>
-            <span class="mode-label">Unificado</span>
+        <!-- Selector de modo estilo Apple -->
+        <div class="mode-selector-container">
+            <div class="mode-selector-button" id="modeSelectorButton">
+                <i class="fas fa-cube"></i>
+                <span id="currentModeText">Modo Unificado</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.75rem;"></i>
+            </div>
+            <div class="mode-selector-dropdown" id="modeSelectorDropdown">
+                <div class="mode-option active" data-mode="unified">
+                    <div class="mode-icon" style="background-color: rgba(239, 68, 68, 0.2); color: #ef4444;">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <div class="mode-info">
+                        <div class="mode-title">Modo Unificado</div>
+                        <div class="mode-description">Solo archivo HTML con todo el código</div>
+                    </div>
+                    <div class="mode-badge">Activo</div>
+                </div>
+                
+                <div class="mode-option" data-mode="separated">
+                    <div class="mode-icon" style="background-color: rgba(16, 185, 129, 0.2); color: #10b981;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="mode-info">
+                        <div class="mode-title">Modo Separado</div>
+                        <div class="mode-description">HTML + CSS + JS en archivos separados</div>
+                    </div>
+                </div>
+                
+                <div class="mode-option" data-mode="mizu">
+                    <div class="mode-icon" style="background-color: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                        <i class="fas fa-folder-tree"></i>
+                    </div>
+                    <div class="mode-info">
+                        <div class="mode-title">Estructura Mizu</div>
+                        <div class="mode-description">HTML + src/css/core.css + src/js/core.js</div>
+                    </div>
+                </div>
+                
+                <div class="mode-option" data-mode="custom">
+                    <div class="mode-icon" style="background-color: rgba(245, 158, 11, 0.2); color: #f59e0b;">
+                        <i class="fas fa-folder-plus"></i>
+                    </div>
+                    <div class="mode-info">
+                        <div class="mode-title">Personalizado</div>
+                        <div class="mode-description">Crea y gestiona tus propios archivos JS/CSS</div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <button id="exportButton" class="action-button">Exportar</button>
