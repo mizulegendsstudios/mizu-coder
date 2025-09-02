@@ -1,82 +1,47 @@
-Mizu-Coder-DS004
-Mizu Coder - Problema Solucionado 
-Version: 1.1.0
-Version generada con TII Falcon H1 34B.
-
-Descripción 
-
-Mizu Coder es una herramienta web diseñada para facilitar la edición y previsualización de código HTML, CSS y JavaScript. Permite a los usuarios escribir código en editores separados por pestañas y ver los resultados en tiempo real en un iframe integrado. 
-Características 
-
-    Editores de código : Tres editores de texto para HTML, CSS y JavaScript con resaltado de sintaxis y números de línea.
-    Vista previa en vivo : Un iframe que muestra la salida del código HTML y CSS escrito, ejecutando también el JavaScript correspondiente.
-    Consola integrada : Muestra los mensajes de consola (log, warn, error) generados por el código JavaScript.
-    Guardado automático : El contenido escrito se guarda automáticamente en el almacenamiento local del navegador.
-    Exportación de código : Permite exportar el código actual de la pestaña activa como archivo.
-    Modo unificado/separado : Opciones para trabajar con HTML completo que incluye CSS y JS internos o con archivos separados.
-    Redimensionamiento : Barra deslizante para ajustar el tamaño del área de edición y la vista previa.
-     
-
-Instalación y Uso 
-
-    Clona o descarga este proyecto en tu máquina local.
-    Abre el archivo index.html en tu navegador web favorito.
-    Comienza a escribir tu código HTML, CSS y JavaScript en las respectivas pestañas.
-    La vista previa se actualizará automáticamente a medida que escribas.
-     
-
-Nota 
-
-Este proyecto utiliza Tailwind CSS a través de un CDN para el estilo y Font Awesome para los íconos. No requiere configuración adicional para ejecutarse, simplemente abre el archivo HTML en un navegador. 
-Contribuyentes 
-
-    Mizu Legends Studios
-     
-
-Licencia 
-
-Este proyecto está bajo la licencia AGPL 3.0. 
-
 # Mizu Coder
 
-**Mizu Coder** es una aplicación web interactiva que permite a los usuarios escribir y previsualizar código **HTML**, **CSS** y **JavaScript** en tiempo real.  
-Incluye funcionalidades como vista previa en vivo, pestañas de edición y una consola integrada para capturar mensajes de `console.log`, `console.warn` y `console.error`.
+**Versión: 2.0.0**  
+**Desarrollado por: Mizu Legends Studios**
 
 ---
 
-## 🚀 Novedades de esta versión 2.0.0
+## 📖 Descripción
 
-- Se dividió el código en **HTML + CSS + JS** (antes estaba todo unificado).  
-- Se actualizó el **selector de modo** estilo Apple:
+**Mizu Coder** es una aplicación web interactiva diseñada para facilitar la edición y previsualización de código **HTML**, **CSS** y **JavaScript** en tiempo real.  
+Permite a los usuarios escribir código en editores separados por pestañas, ver resultados instantáneamente en una vista previa integrada y depurar con una consola personalizada.
+
+---
+
+## 🚀 Novedades de la versión 2.0.0
+
+- ✅ **División del código** en archivos **HTML + CSS + JS** (antes estaba todo unificado).  
+- ✅ Nuevo **selector de modo estilo Apple** con las siguientes opciones:
   - **Modo Unificado** → Un solo archivo HTML con todo el código.  
   - **Modo Separado** → HTML, CSS y JS en pestañas independientes.  
   - **Modo Mizu** (⚠️ en desarrollo) → Usará `src/css/core.css` + `src/js/core.js`.  
   - **Modo Personalizado** (⚠️ en desarrollo) → Permitirá crear y gestionar múltiples archivos.  
+- ✅ **Redimensionamiento mejorado** con slider responsivo:  
+  - Horizontal en pantallas grandes.  
+  - Vertical en pantallas pequeñas.  
+- ✅ Estado actual: **estable y funcional**.  
 
-> **Nota:** El **Modo Mizu** y el **Modo Personalizado** aún no son funcionales.  
-En la próxima versión se agregará la capacidad de crear más pestañas JS/CSS para habilitarlos.
-
-- Ajustes en el diseño:  
-  - Se corrigió el sistema de redimensionamiento de ventanas con el slider.  
-  - Vista responsiva: en pantallas grandes los editores y la vista previa se dividen horizontalmente, y en pantallas pequeñas se apilan verticalmente.  
-
-- Estado actual: **estable y funcional** ✅
+> ℹ️ Nota: **Modo Mizu** y **Modo Personalizado** aún no están habilitados.  
+En próximas versiones se agregará la capacidad de crear múltiples pestañas JS/CSS para activarlos.
 
 ---
 
 ## ✨ Funcionalidades principales
 
-- Editor en pestañas para **HTML, CSS y JS**.  
-- Vista previa en vivo dentro de un `iframe`.  
-- Consola integrada con soporte para logs, advertencias y errores.  
-- Sistema de guardado automático en `localStorage`.  
-- Exportación del contenido de cada pestaña a un archivo descargable.  
-- Resizer (slider) para ajustar el tamaño entre editor y vista previa.
+- 📝 **Editores en pestañas** para HTML, CSS y JS.  
+- 🔄 **Vista previa en vivo** dentro de un `iframe`.  
+- 🖥️ **Consola integrada** con soporte para `console.log`, `console.warn` y `console.error`.  
+- 💾 **Guardado automático** en `localStorage`.  
+- 📤 **Exportación de código** de cada pestaña como archivo descargable.  
+- 📐 **Ajuste dinámico** entre editor y vista previa con slider.  
 
 ---
 
-## 📂 Estructura actual del proyecto
-
+## 📂 Estructura del proyecto
 
 mizu-coder/
 │── index.html # Interfaz principal
@@ -89,16 +54,31 @@ mizu-coder/
 
 ---
 
-## 🛠️ Próximos pasos
+## 🛠️ Instalación y uso
 
-- [ ] Agregar pestañas dinámicas para múltiples archivos JS/CSS.  
-- [ ] Habilitar **Modo Mizu** y **Modo Personalizado**.  
-- [ ] Mejorar la gestión de proyectos/exportación.  
-- [ ] Optimizar la experiencia móvil.  
+1. Clona o descarga este proyecto en tu máquina local.  
+2. Abre el archivo `index.html` en tu navegador favorito.  
+3. Escribe tu código HTML, CSS y JS en las pestañas correspondientes.  
+4. Observa los resultados instantáneamente en la vista previa.  
+
+---
+
+## 📌 Roadmap (Próximos pasos)
+
+- [ ] Agregar soporte para **pestañas dinámicas** de múltiples archivos JS/CSS.  
+- [ ] Habilitar los modos **Mizu** y **Personalizado**.  
+- [ ] Mejorar la gestión de proyectos y exportación.  
+- [ ] Optimizar experiencia en dispositivos móviles.  
+
+---
+
+## 👨‍💻 Contribuyentes
+
+- **Mizu Legends Studios**
 
 ---
 
 ## 📜 Licencia
 
-Este proyecto se distribuye bajo la licencia MIT.  
-Eres libre de usarlo, modificarlo y compartirlo bajo los términos de dicha licencia.
+Este proyecto está licenciado bajo **AGPL 3.0**.  
+Eres libre de usarlo, modificarlo y distribuirlo bajo los términos de dicha licencia.
