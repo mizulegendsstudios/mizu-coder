@@ -1,12 +1,12 @@
 // src/js/dev/tab-manager.js
-// Gestión segura de pestañas dinámicas (JS/CSS) con soporte para cierre
+// Gestión segura de pestañas dinámicas (JS/CSS) con cierre y renombrado
 
 import { generateUniqueId } from './utils.js';
 import { addCloseButton } from './close-tab.js';
 
 // ✅ Evita múltiples inicializaciones
 let tabsInitialized = false;
-const createdTabIds = new Set(); // ✅ Evita IDs duplicados
+const createdTabIds = new Set(); // Evita duplicados
 
 /**
  * Crea una nueva pestaña de código (JS o CSS)
@@ -42,22 +42,42 @@ export function createNewTab(type = 'js', app) {
     // Cambiar a esta pestaña al hacer clic
     tabButton.addEventListener('click', () => switchToTab(id, type));
 
-    // === 2. Añadir botón de cierre ❌ ===
+    // === 2. Doble clic para renombrar ===
+    tabButton.addEventListener('dblclick', () => {
+        const currentLabel = tabButton.textContent.trim().replace('×', '').trim();
+        const newLabel = prompt('Nuevo nombre de la pestaña:', currentLabel);
+        
+        if (newLabel && newLabel.trim()) {
+            const cleanLabel = newLabel.trim();
+            tabButton.textContent = cleanLabel;
+            
+            // Recrear botón ×
+            const closeBtn = tabButton.querySelector('.close-tab-btn');
+            if (closeBtn) closeBtn.remove();
+            addCloseButton(tabButton, id, type, app);
+            
+            // Actualizar estado
+            updateTabState(id, cleanLabel, type);
+            console.log(`✏️ Mizu Coder: Pestaña renombrada a "${cleanLabel}"`);
+        }
+    });
+
+    // === 3. Añadir botón de cierre ❌ ===
     addCloseButton(tabButton, id, type, app);
 
-    // === 3. Crear el wrapper del editor ===
+    // === 4. Crear el wrapper del editor ===
     const wrapper = document.createElement('div');
     wrapper.className = 'editor-wrapper';
     wrapper.id = `${id}-wrapper`;
     wrapper.style.display = 'none';
 
-    // === 4. Números de línea ===
+    // === 5. Números de línea ===
     const lineNumbers = document.createElement('div');
     lineNumbers.className = 'line-numbers';
     lineNumbers.id = `${id}-line-numbers`;
     lineNumbers.innerHTML = '1';
 
-    // === 5. Editor de texto ===
+    // === 6. Editor de texto ===
     const editor = document.createElement('textarea');
     editor.className = 'editor';
     editor.dataset.id = id;
@@ -86,11 +106,11 @@ export function createNewTab(type = 'js', app) {
         }
     });
 
-    // === 6. Estructura final: números + editor ===
+    // === 7. Estructura final: números + editor ===
     wrapper.appendChild(lineNumbers);
     wrapper.appendChild(editor);
 
-    // === 7. Insertar en el DOM (antes del botón +) ===
+    // === 8. Insertar en el DOM (antes del botón +) ===
     const tabsContainer = document.getElementById('tabs');
     const addTabBtn = document.getElementById('addTabBtn');
 
@@ -102,18 +122,18 @@ export function createNewTab(type = 'js', app) {
     tabsContainer.insertBefore(tabButton, addTabBtn);
     document.getElementById('editorContainer').appendChild(wrapper);
 
-    // === 8. Cargar contenido guardado ===
+    // === 9. Cargar contenido guardado ===
     const savedContent = loadTabContent(id);
     if (savedContent) {
         editor.value = savedContent;
         updateLines();
     }
 
-    // === 9. Cambiar a la nueva pestaña ===
+    // === 10. Cambiar a la nueva pestaña ===
     switchToTab(id, type);
 
-    // === 10. Guardar estado en localStorage ===
-    saveTabState(id, type);
+    // === 11. Guardar estado en localStorage ===
+    saveTabState(id, type, tabButton.textContent.trim());
 }
 
 /**
@@ -163,16 +183,33 @@ function loadTabContent(id) {
 }
 
 /**
- * Guarda el estado de la pestaña (para restaurar al recargar)
+ * Guarda el estado de la pestaña (ID, tipo, nombre)
  * @param {string} id
  * @param {string} type
+ * @param {string} label
  */
-function saveTabState(id, type) {
+function saveTabState(id, type, label) {
     const savedTabs = JSON.parse(localStorage.getItem('mizu_coder_tabs') || '[]');
     if (!savedTabs.some(tab => tab.id === id)) {
-        savedTabs.push({ id, type });
+        savedTabs.push({ id, type, label });
         localStorage.setItem('mizu_coder_tabs', JSON.stringify(savedTabs));
-        console.log(`💾 Mizu Coder: Pestaña guardada: ${id}`);
+        console.log(`💾 Mizu Coder: Pestaña guardada: ${id} (${label})`);
+    }
+}
+
+/**
+ * Actualiza el nombre de una pestaña en localStorage
+ * @param {string} id
+ * @param {string} label
+ * @param {string} type
+ */
+function updateTabState(id, label, type) {
+    const savedTabs = JSON.parse(localStorage.getItem('mizu_coder_tabs') || '[]');
+    const tab = savedTabs.find(t => t.id === id);
+    if (tab) {
+        tab.label = label;
+        tab.type = type;
+        localStorage.setItem('mizu_coder_tabs', JSON.stringify(savedTabs));
     }
 }
 
@@ -201,6 +238,17 @@ export function restoreSavedTabs(app) {
         if (!document.getElementById(`${tab.id}-wrapper`)) {
             setTimeout(() => {
                 createNewTab(tab.type, app);
+                const editor = document.querySelector(`[data-id="${tab.id}"]`);
+                if (editor && tab.label) {
+                    const button = document.getElementById(`${tab.id}-button`);
+                    if (button) {
+                        button.textContent = tab.label;
+                        // Recrear botón ×
+                        const closeBtn = button.querySelector('.close-tab-btn');
+                        if (closeBtn) closeBtn.remove();
+                        addCloseButton(button, tab.id, tab.type, app);
+                    }
+                }
             }, 50);
         }
     });
