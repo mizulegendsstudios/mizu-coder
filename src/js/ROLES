@@ -1,0 +1,25 @@
+🔑 Roles de cada archivo
+
+core.js
+
+Maneja la inicialización de la app.
+
+Controla qué módulos se cargan y cuáles se desactivan.
+
+No tiene lógica de funciones directamente, solo gestiona.
+
+funcionables2_0_0.js
+
+Aquí vive el código que ya sabemos que funciona en la 2.0.0.
+
+Todo lo que es estable queda separado para que no se rompa.
+
+nuevasfunciones.js
+
+Aquí se añaden las features en desarrollo (pestañas dinámicas, modos Mizu/Personalizado, etc.).
+
+Puede importar módulos (moduleX.js) a medida que vayamos probando.
+
+moduleX.js (opcional por ahora)
+
+Lugar donde probamos funciones experimentales, cada módulo aislado.
