@@ -17,7 +17,7 @@ function initializeApp() {
     initializeEditors();
     initializePreview();
     initializeConsole();
-    initializeLayout();
+    initializeLayout(); // ¡Este debe inicializarse!
     initializeExport();
     initializeModeSelector();
     
@@ -39,7 +39,9 @@ function setupEventListeners() {
     // Event listener para redimensionamiento de ventana
     window.addEventListener('resize', () => {
         const resizerSlider = document.getElementById('resizerSlider');
-        updateLayout(resizerSlider.value);
+        if (resizerSlider) {
+            updateLayout(parseInt(resizerSlider.value));
+        }
     });
 }
 
