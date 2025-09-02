@@ -1,27 +1,78 @@
-// core.js
-const modules = {
-    editor: { enabled: true, script: "src/js/editor.js" },
-    preview: { enabled: true, script: "src/js/preview.js" },
-    console: { enabled: true, script: "src/js/console.js" },
-    tabs: { enabled: true, script: "src/js/tabs.js" },
-    achievements: { enabled: false, script: "src/js/module1.js" },
-    participants: { enabled: false, script: "src/js/module2.js" },
-    teams: { enabled: false, script: "src/js/module3.js" },
-    // ... seguir hasta module20
+/* ==========================================================
+   core.js
+   Orquestador principal de Mizu Coder
+   Versión: 2.1.0 (en desarrollo)
+   ========================================================== */
+
+/* ==========================================================
+   ⚙️ Configuración inicial
+   ========================================================== */
+const MizuCore = {
+  version: "2.1.0-dev",
+  modules: {
+    base: true,  // funcionables2_0_0.js
+    experimental: false // nuevasfunciones.js
+  },
+  initialized: false
 };
 
-function loadModules() {
-    Object.entries(modules).forEach(([name, mod]) => {
-        if (mod.enabled) {
-            const script = document.createElement("script");
-            script.src = mod.script;
-            script.type = "module";
-            document.body.appendChild(script);
-            console.log(`✅ Módulo cargado: ${name}`);
-        } else {
-            console.log(`⏸️ Módulo deshabilitado: ${name}`);
-        }
-    });
+/* ==========================================================
+   🔄 Carga dinámica de scripts
+   ========================================================== */
+function loadScript(path, callback) {
+  const script = document.createElement("script");
+  script.src = path;
+  script.onload = () => {
+    console.log(`[MizuCore] Script cargado: ${path}`);
+    if (callback) callback();
+  };
+  script.onerror = () => console.error(`[MizuCore] Error al cargar: ${path}`);
+  document.body.appendChild(script);
 }
 
-window.addEventListener("DOMContentLoaded", loadModules);
+/* ==========================================================
+   🚀 Inicialización
+   ========================================================== */
+function initMizuCoder() {
+  if (MizuCore.initialized) {
+    console.warn("[MizuCore] Ya inicializado.");
+    return;
+  }
+
+  console.log(`%c[MizuCore] Iniciando Mizu Coder v${MizuCore.version}`, "color:#3b82f6; font-weight:bold;");
+
+  // 1. Cargar funciones base (siempre)
+  loadScript("./src/js/funcionables2_0_0.js", () => {
+    console.log("[MizuCore] Módulo base listo ✅");
+
+    // 2. Cargar funciones experimentales (opcional)
+    if (MizuCore.modules.experimental) {
+      loadScript("./src/js/nuevasfunciones.js", () => {
+        console.log("[MizuCore] Módulo experimental habilitado ⚡");
+        if (typeof initExperimental === "function") {
+          initExperimental();
+        }
+      });
+    }
+
+    MizuCore.initialized = true;
+  });
+}
+
+/* ==========================================================
+   🖥️ Debug Info
+   ========================================================== */
+function showDebugInfo() {
+  const debugDiv = document.createElement("div");
+  debugDiv.className = "debug-info";
+  debugDiv.innerText = `Mizu Coder v${MizuCore.version}\nBase: ${MizuCore.modules.base}\nExperimental: ${MizuCore.modules.experimental}`;
+  document.body.appendChild(debugDiv);
+}
+
+/* ==========================================================
+   🌐 Eventos globales
+   ========================================================== */
+window.addEventListener("DOMContentLoaded", () => {
+  initMizuCoder();
+  showDebugInfo();
+});
