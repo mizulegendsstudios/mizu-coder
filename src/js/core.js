@@ -1,11 +1,11 @@
-// Importación de módulos
-import { initializeEditors, updateLineNumbers, handleEditorInput } from './modules/editor.js';
-import { initializePreview, updatePreview } from './modules/preview.js';
-import { initializeConsole, addConsoleMessage, clearConsole } from './modules/console.js';
-import { initializeLayout, updateLayout } from './modules/layout.js';
-import { initializeExport } from './modules/export.js';
-import { initializeStorage, saveToLocalStorage, loadFromLocalStorage } from './modules/storage.js';
-import { initializeModeSelector, currentMode } from './modules/mode-selector.js';
+// Importación de módulos (sin la carpeta modules/)
+import { initializeEditors, updateLineNumbers, handleEditorInput } from './editor.js';
+import { initializePreview, updatePreview } from './preview.js';
+import { initializeConsole, addConsoleMessage, clearConsole } from './console.js';
+import { initializeLayout, updateLayout } from './layout.js';
+import { initializeExport } from './export.js';
+import { initializeStorage, saveToLocalStorage, loadFromLocalStorage } from './storage.js';
+import { initializeModeSelector, currentMode } from './mode-selector.js';
 
 // Variables globales
 let activeTab = 'html';
