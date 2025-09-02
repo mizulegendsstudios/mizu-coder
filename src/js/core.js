@@ -13,7 +13,6 @@ const resetButton = document.getElementById('resetButton');
 const saveIndicator = document.getElementById('saveIndicator');
 const resizer = document.getElementById('resizer');
 const debugInfo = document.getElementById('debugInfo');
-const unifiedModeToggle = document.getElementById('unifiedModeToggle');
 const consoleContent = document.getElementById('consoleContent');
 const clearConsoleBtn = document.getElementById('clearConsole');
 
@@ -30,17 +29,23 @@ const consoleWrapper = document.getElementById('console-wrapper');
 const htmlLineNumbers = document.getElementById('html-line-numbers');
 const cssLineNumbers = document.getElementById('css-line-numbers');
 const jsLineNumbers = document.getElementById('js-line-numbers');
-
+    
+// Elementos del selector de modo
+const modeSelectorButton = document.getElementById('modeSelectorButton');
+const modeSelectorDropdown = document.getElementById('modeSelectorDropdown');
+const currentModeText = document.getElementById('currentModeText');
+const modeOptions = document.querySelectorAll('.mode-option');
+    
 // Almacena la pestaña activa
 let activeTab = 'html';
-let unifiedMode = false;
-
+let currentMode = 'unified'; // unified, separated, mizu, custom
+    
 // Nombres para las claves de localStorage
 const storageKeys = {
     html: 'mizu_coder_html',
     css: 'mizu_coder_css',
     js: 'mizu_coder_js',
-    unifiedMode: 'mizu_coder_unified_mode'
+    mode: 'mizu_coder_mode'
 };
 
 // Mensaje inicial para la vista previa
@@ -292,7 +297,7 @@ const overrideConsole = (previewWindow) => {
     };
 };
 
-// Función para actualizar la vista previa - SOLUCIÓN DEFINITIVA
+// Función para actualizar la vista previa según el modo seleccionado
 const updatePreview = () => {
     const htmlCode = htmlEditor.value;
     const cssCode = cssEditor.value;
@@ -304,15 +309,17 @@ const updatePreview = () => {
     try {
         debugInfo.textContent = "Actualizando preview...";
         
+        let fullDocument = '';
+        
         // Determinar el modo de operación
-        if (unifiedMode && isCompleteHTML(htmlCode)) {
+        if (currentMode === 'unified') {
             // Modo unificado: el HTML contiene todo el código
             const extracted = extractFromCompleteHTML(htmlCode);
             const finalHTML = extracted.html;
             const finalCSS = extracted.css + (cssCode || '');
             const finalJS = extracted.js + (jsCode || '');
             
-            const fullDocument = `
+            fullDocument = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -331,13 +338,9 @@ const updatePreview = () => {
                 </body>
                 </html>
             `;
-            
-            previewDoc.open();
-            previewDoc.write(fullDocument);
-            previewDoc.close();
-        } else {
+        } else if (currentMode === 'separated') {
             // Modo separado: HTML, CSS y JS por separado
-            const fullDocument = `
+            fullDocument = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -356,11 +359,48 @@ const updatePreview = () => {
                 </body>
                 </html>
             `;
-            
-            previewDoc.open();
-            previewDoc.write(fullDocument);
-            previewDoc.close();
+        } else if (currentMode === 'mizu') {
+            // Estructura Mizu: HTML + src/css/core.css + src/js/core.js
+            fullDocument = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <link rel="stylesheet" href="src/css/core.css">
+                </head>
+                <body>
+                    ${htmlCode}
+                    <script src="src/js/core.js"><\/script>
+                </body>
+                </html>
+            `;
+        } else if (currentMode === 'custom') {
+            // Modo personalizado: similar al separado pero con posibilidad de agregar más archivos
+            fullDocument = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>${cssCode}</style>
+                </head>
+                <body>
+                    ${htmlCode}
+                    <script>
+                        // Envolvemos todo el JS en una IIFE para evitar contaminación global
+                        (function() {
+                            ${jsCode}
+                        })();
+                    <\/script>
+                </body>
+                </html>
+            `;
         }
+        
+        previewDoc.open();
+        previewDoc.write(fullDocument);
+        previewDoc.close();
         
         // Sobrescribir console methods después de que el documento se cargue
         setTimeout(() => {
@@ -384,7 +424,7 @@ const saveToLocalStorage = () => {
     localStorage.setItem(storageKeys.html, htmlEditor.value);
     localStorage.setItem(storageKeys.css, cssEditor.value);
     localStorage.setItem(storageKeys.js, jsEditor.value);
-    localStorage.setItem(storageKeys.unifiedMode, unifiedMode);
+    localStorage.setItem(storageKeys.mode, currentMode);
     
     // Mostrar indicador de guardado
     saveIndicator.textContent = 'Guardado';
@@ -398,8 +438,46 @@ const loadFromLocalStorage = () => {
     htmlEditor.value = localStorage.getItem(storageKeys.html) || initialHTML;
     cssEditor.value = localStorage.getItem(storageKeys.css) || initialCSS;
     jsEditor.value = localStorage.getItem(storageKeys.js) || initialJS;
-    unifiedMode = localStorage.getItem(storageKeys.unifiedMode) === 'true';
-    unifiedModeToggle.checked = unifiedMode;
+    currentMode = localStorage.getItem(storageKeys.mode) || 'unified';
+    
+    // Actualizar la UI según el modo cargado
+    updateModeUI(currentMode);
+};
+
+// Función para actualizar la UI según el modo seleccionado
+const updateModeUI = (mode) => {
+    // Actualizar el texto del botón
+    const modeTexts = {
+        'unified': 'Modo Unificado',
+        'separated': 'Modo Separado',
+        'mizu': 'Estructura Mizu',
+        'custom': 'Personalizado'
+    };
+    currentModeText.textContent = modeTexts[mode] || 'Modo Unificado';
+    
+    // Actualizar las opciones activas en el dropdown
+    modeOptions.forEach(option => {
+        if (option.dataset.mode === mode) {
+            option.classList.add('active');
+            // Agregar badge "Activo"
+            if (!option.querySelector('.mode-badge')) {
+                const badge = document.createElement('div');
+                badge.className = 'mode-badge';
+                badge.textContent = 'Activo';
+                option.appendChild(badge);
+            }
+        } else {
+            option.classList.remove('active');
+            // Eliminar badge "Activo"
+            const badge = option.querySelector('.mode-badge');
+            if (badge) {
+                badge.remove();
+            }
+        }
+    });
+    
+    // Ocultar el dropdown
+    modeSelectorDropdown.classList.remove('show');
 };
 
 // Escuchar los eventos de entrada para actualizar la vista previa y los números de línea
@@ -491,12 +569,6 @@ resetButton.addEventListener('click', () => {
     updatePreview();
 });
 
-// Cambiar entre modo unificado y separado
-unifiedModeToggle.addEventListener('change', () => {
-    unifiedMode = unifiedModeToggle.checked;
-    updatePreview();
-});
-
 // Limpiar consola
 clearConsoleBtn.addEventListener('click', (e) => {
     e.stopPropagation(); // Evitar que se toggle la consola
@@ -530,6 +602,30 @@ resizerSlider.addEventListener('input', (e) => {
 // Ajustar el layout al cambiar el tamaño de la ventana
 window.addEventListener('resize', () => {
     updateLayout(resizerSlider.value);
+});
+
+// Lógica para el selector de modo estilo Apple
+modeSelectorButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    modeSelectorDropdown.classList.toggle('show');
+});
+
+// Cerrar el dropdown al hacer clic fuera de él
+document.addEventListener('click', (e) => {
+    if (!modeSelectorButton.contains(e.target) && !modeSelectorDropdown.contains(e.target)) {
+        modeSelectorDropdown.classList.remove('show');
+    }
+});
+
+// Manejar la selección de modo
+modeOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        const selectedMode = option.dataset.mode;
+        currentMode = selectedMode;
+        updateModeUI(selectedMode);
+        updatePreview();
+        saveToLocalStorage();
+    });
 });
 
 // Inicializar la vista previa con el contenido guardado o inicial
