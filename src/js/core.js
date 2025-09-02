@@ -1,11 +1,21 @@
 // src/js/core.js
-import { setupStableFeatures } from './stable/stable.js';
-import { setupDevFeatures } from './dev/dev.js';
+import { setupStableFeatures } from '.src/stable/stable.js';
+import { setupDevFeatures } from '.src/dev/dev.js';
 
 const app = {
     currentMode: 'unified',
     tabs: [],
     init() {
+        // Aseguramos que el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.setupModules();
+            });
+        } else {
+            this.setupModules();
+        }
+    },
+    setupModules() {
         setupStableFeatures(this);
         setupDevFeatures(this);
         this.attachModeSelector();
@@ -17,7 +27,6 @@ const app = {
             button.addEventListener('click', () => {
                 dropdown.classList.toggle('show');
             });
-            // Cerrar al hacer clic fuera
             document.addEventListener('click', (e) => {
                 if (!button.contains(e.target) && !dropdown.contains(e.target)) {
                     dropdown.classList.remove('show');
@@ -27,8 +36,5 @@ const app = {
     }
 };
 
-// Inicializar la app
+// Inicializar
 app.init();
-
-// Exportar para depuración (opcional)
-window.mizuCoder = app;
