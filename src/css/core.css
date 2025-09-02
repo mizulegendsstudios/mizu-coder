@@ -377,28 +377,32 @@ h1, h2, h3, h4, h5, h6 {
 /* ==============================
    Separador (resizer)
 ============================== */
+/* Separador para redimensionar */
 .resizer {
-  height: 12px;
-  background-color: var(--border-color);
-  cursor: row-resize;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  transition: background-color 0.2s;
+    height: 12px;
+    background-color: #374151;
+    cursor: row-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.2s;
+    z-index: 10; /* Asegura que esté arriba */
+    min-height: 12px;
+    pointer-events: auto; /* ← Clave: permite clic y arrastre */
 }
 
 .resizer:hover {
-  background-color: #4b5563;
+    background-color: #4b5563;
 }
 
 .resizer::before {
-  content: "";
-  position: absolute;
-  width: 40px;
-  height: 4px;
-  border-radius: 2px;
-  background-color: #9ca3af;
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: #9ca3af;
 }
 
 /* ==============================
