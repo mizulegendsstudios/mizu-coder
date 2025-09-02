@@ -261,18 +261,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .editor {
-  flex-grow: 1;
-  resize: none;
-  padding: 1rem;
-  background-color: var(--card-bg);
-  color: var(--text-color);
-  border: none;
-  outline: none;
-  font-family: 'Fira Code', 'Courier New', monospace;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  tab-size: 4;
-  caret-color: var(--primary-color);
+    flex-grow: 1;
+    resize: none;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: none;
+    outline: none;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    tab-size: 4;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .editor::placeholder {
