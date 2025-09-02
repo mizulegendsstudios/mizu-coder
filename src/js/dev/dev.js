@@ -1,5 +1,5 @@
 // src/js/dev/dev.js
-// Funcionalidades en desarrollo: pestañas dinámicas, modo Mizu
+// Funcionalidades en desarrollo: pestañas dinámicas, modo Mizu, auto-modo
 
 import { createNewTab, restoreSavedTabs } from './tab-manager.js';
 import { activateMizuMode } from './mode-mizu.js';
@@ -36,7 +36,6 @@ export function setupDevFeatures(app) {
                 return;
             }
 
-            // ✅ Crear pestaña (tab-manager.js se encarga de evitar duplicados)
             createNewTab(type, app);
             console.log(`✅ Mizu Coder: Pestaña de ${type.toUpperCase()} creada`);
         });
@@ -56,11 +55,11 @@ export function setupDevFeatures(app) {
             const mode = option.dataset.mode;
             console.log(`🎯 Mizu Coder: Modo seleccionado: ${mode}`);
 
-            if (mode === 'mizu') {
+            if (mode === 'mizu' && typeof activateMizuMode === 'function') {
                 activateMizuMode(app);
             }
 
-            // Forzar actualización de la vista previa
+            // Forzar actualización
             if (typeof app.updatePreview === 'function') {
                 setTimeout(app.updatePreview, 100);
             }
