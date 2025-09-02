@@ -1,37 +1,84 @@
-Mizu Coder - Problema Solucionado 
-Version: 1.1.0
-Version generada con TII Falcon H1 34B.
+# Mizu Coder
 
-Descripción 
+**Versión: 2.0.0**  
+**Desarrollado por: Mizu Legends Studios**
 
-Mizu Coder es una herramienta web diseñada para facilitar la edición y previsualización de código HTML, CSS y JavaScript. Permite a los usuarios escribir código en editores separados por pestañas y ver los resultados en tiempo real en un iframe integrado. 
-Características 
+---
 
-    Editores de código : Tres editores de texto para HTML, CSS y JavaScript con resaltado de sintaxis y números de línea.
-    Vista previa en vivo : Un iframe que muestra la salida del código HTML y CSS escrito, ejecutando también el JavaScript correspondiente.
-    Consola integrada : Muestra los mensajes de consola (log, warn, error) generados por el código JavaScript.
-    Guardado automático : El contenido escrito se guarda automáticamente en el almacenamiento local del navegador.
-    Exportación de código : Permite exportar el código actual de la pestaña activa como archivo.
-    Modo unificado/separado : Opciones para trabajar con HTML completo que incluye CSS y JS internos o con archivos separados.
-    Redimensionamiento : Barra deslizante para ajustar el tamaño del área de edición y la vista previa.
-     
+## 📖 Descripción
 
-Instalación y Uso 
+**Mizu Coder** es una herramienta web interactiva diseñada para facilitar la edición y previsualización de código **HTML**, **CSS** y **JavaScript** en tiempo real.  
+Permite a los usuarios escribir código en editores separados por pestañas, ver resultados instantáneamente en una vista previa integrada y depurar con una consola personalizada.
 
-    Clona o descarga este proyecto en tu máquina local.
-    Abre el archivo index.html en tu navegador web favorito.
-    Comienza a escribir tu código HTML, CSS y JavaScript en las respectivas pestañas.
-    La vista previa se actualizará automáticamente a medida que escribas.
-     
+---
 
-Nota 
+## 🚀 Novedades de la versión 2.0.0
 
-Este proyecto utiliza Tailwind CSS a través de un CDN para el estilo y Font Awesome para los íconos. No requiere configuración adicional para ejecutarse, simplemente abre el archivo HTML en un navegador. 
-Contribuyentes 
+- ✅ **División del código** en archivos **HTML + CSS + JS** (antes estaba todo unificado).  
+- ✅ Nuevo **selector de modo estilo Apple** con las siguientes opciones:
+  - **Modo Unificado** → Un solo archivo HTML con todo el código.  
+  - **Modo Separado** → HTML, CSS y JS en pestañas independientes.  
+  - **Modo Mizu** (⚠️ en desarrollo) → Usará `src/css/core.css` + `src/js/core.js`.  
+  - **Modo Personalizado** (⚠️ en desarrollo) → Permitirá crear y gestionar múltiples archivos.  
+- ✅ **Redimensionamiento mejorado** con slider responsivo:  
+  - Horizontal en pantallas grandes.  
+  - Vertical en pantallas pequeñas.  
+- ✅ Estado actual: **estable y funcional**.  
 
-    Mizu Legends Studios
-     
+> ℹ️ Nota: **Modo Mizu** y **Modo Personalizado** aún no están habilitados.  
+En próximas versiones se agregará la capacidad de crear múltiples pestañas JS/CSS para activarlos.
 
-Licencia 
+---
 
-Este proyecto está bajo la licencia AGPL 3.0. 
+## ✨ Funcionalidades principales
+
+- 📝 **Editores en pestañas** para HTML, CSS y JS.  
+- 🔄 **Vista previa en vivo** dentro de un `iframe`.  
+- 🖥️ **Consola integrada** con soporte para `console.log`, `console.warn` y `console.error`.  
+- 💾 **Guardado automático** en `localStorage`.  
+- 📤 **Exportación de código** de cada pestaña como archivo descargable.  
+- 📐 **Ajuste dinámico** entre editor y vista previa con slider.  
+
+---
+
+## 📂 Estructura del proyecto
+
+mizu-coder/
+│── index.html # Interfaz principal
+│── src/
+│ ├── css/
+│ │ └── core.css # Estilos base
+│ └── js/
+│ └── core.js # Lógica principal
+
+
+---
+
+## 🛠️ Instalación y uso
+
+1. Clona o descarga este proyecto en tu máquina local.  
+2. Abre el archivo `index.html` en tu navegador favorito.  
+3. Escribe tu código HTML, CSS y JS en las pestañas correspondientes.  
+4. Observa los resultados instantáneamente en la vista previa.  
+
+---
+
+## 📌 Roadmap (Próximos pasos)
+
+- [ ] Agregar soporte para **pestañas dinámicas** de múltiples archivos JS/CSS.  
+- [ ] Habilitar los modos **Mizu** y **Personalizado**.  
+- [ ] Mejorar la gestión de proyectos y exportación.  
+- [ ] Optimizar experiencia en dispositivos móviles.  
+
+---
+
+## 👨‍💻 Contribuyentes
+
+- **Mizu Legends Studios**
+
+---
+
+## 📜 Licencia
+
+Este proyecto está licenciado bajo **AGPL 3.0**.  
+Eres libre de usarlo, modificarlo y distribuirlo bajo los términos de dicha licencia.
