@@ -1,40 +1,43 @@
 // src/js/core.js
-import { setupStableFeatures } from './stable/stable.js';
-import { setupDevFeatures } from './dev/dev.js';
+// Punto de entrada de Mizu Coder v2.1.0
+// Carga los módulos estables y de desarrollo
 
-const app = {
-    currentMode: 'unified',
-    tabs: [],
-    init() {
-        // Aseguramos que el DOM esté listo
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.setupModules();
-            });
-        } else {
-            this.setupModules();
-        }
-    },
-    setupModules() {
-        setupStableFeatures(this);
-        setupDevFeatures(this);
-        this.attachModeSelector();
-    },
-    attachModeSelector() {
-        const button = document.getElementById('modeSelectorButton');
-        const dropdown = document.getElementById('modeSelectorDropdown');
-        if (button && dropdown) {
-            button.addEventListener('click', () => {
-                dropdown.classList.toggle('show');
-            });
-            document.addEventListener('click', (e) => {
-                if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.remove('show');
-                }
-            });
-        }
-    }
-};
+console.log('✅ Mizu Coder: core.js cargado correctamente');
 
-// Inicializar
-app.init();
+// Verificar que el DOM esté listo antes de importar e inicializar
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
+
+function initApp() {
+    console.log('🟢 Mizu Coder: DOM completamente cargado y listo');
+
+    // Objeto principal de la app
+    const app = {
+        currentMode: 'unified',
+        tabs: []
+    };
+
+    // Cargar módulos
+    Promise.all([
+        import('./stable/stable.js'),
+        import('./dev/dev.js')
+    ])
+    .then(([{ setupStableFeatures }, { setupDevFeatures }]) => {
+        // Inicializar funcionalidades estables
+        setupStableFeatures(app);
+        console.log('🔵 Mizu Coder: Funcionalidades estables inicializadas');
+
+        // Inicializar funcionalidades en desarrollo
+        setupDevFeatures(app);
+        console.log('🟢 Mizu Coder: Modo desarrollo activado (pestañas dinámicas, modo Mizu)');
+
+        // Exponer app para depuración (opcional)
+        window.mizuCoder = app;
+    })
+    .catch(err => {
+        console.error('❌ Error al cargar módulos:', err);
+    });
+}
