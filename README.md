@@ -5,7 +5,7 @@ Incluye funcionalidades como vista previa en vivo, pestañas de edición y una c
 
 ---
 
-## 🚀 Novedades de esta versión
+## 🚀 Novedades de esta versión 2.0.0
 
 - Se dividió el código en **HTML + CSS + JS** (antes estaba todo unificado).  
 - Se actualizó el **selector de modo** estilo Apple:
