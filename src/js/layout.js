@@ -11,6 +11,9 @@ function initializeLayout() {
     resizerSlider.addEventListener('input', (e) => {
         updateLayout(e.target.value);
     });
+    
+    // Inicializar el layout con el valor por defecto
+    updateLayout(resizerSlider.value);
 }
 
 // Actualizar el layout según el valor del slider
@@ -32,4 +35,5 @@ function updateLayout(value) {
     }
 }
 
+// Exportar funciones
 export { initializeLayout, updateLayout };
