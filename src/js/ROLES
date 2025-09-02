@@ -23,3 +23,15 @@ Puede importar módulos (moduleX.js) a medida que vayamos probando.
 moduleX.js (opcional por ahora)
 
 Lugar donde probamos funciones experimentales, cada módulo aislado.
+
+src/
+ ├── css/
+ │   └── core.css
+ └── js/
+     ├── core.js                # Núcleo: gestor de módulos, carga dinámica, inicialización
+     ├── funcionables2_0_0.js   # Todo lo que ya es estable en la versión 2.0.0
+     ├── nuevasfunciones.js     # Desarrollo de nuevas funciones (pestañas dinámicas, modos avanzados, etc.)
+     ├── module1.js             # Ejemplo de módulo extra (placeholder)
+     ├── module2.js
+     └── ...
+
